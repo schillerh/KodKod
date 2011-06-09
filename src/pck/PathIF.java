@@ -102,6 +102,13 @@ public class PathIF {
 
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
+		
+		final TupleSet Next = f.noneOf(2);
+		for(Integer i = 0; i < scope - 1; i++){
+			Integer plusone = i + 1;
+			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
+		}
+		b.boundExactly(next, Next);
 
 		final TupleSet Begins = f.noneOf(2);
 		Begins.add(f.tuple("Edge1", "Node1"));
