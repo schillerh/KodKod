@@ -71,7 +71,7 @@ public final Bounds getbounds(int scope) {
 	final List<String> atoms = new ArrayList<String>(n);
 	for (int i = 1; i <= 6; i++)
 		atoms.add("Node" + i);
-	for (int i = 1; i <= 7; i++)
+	for (int i = 1; i <= 6; i++)
 		atoms.add("Edge" + i);
 	for (int i = 0; i < scope; i++)
 		atoms.add("Visit" + i);
@@ -96,7 +96,6 @@ public final Bounds getbounds(int scope) {
 	Begins.add(f.tuple("Edge4", "Node3"));
 	Begins.add(f.tuple("Edge5", "Node4"));
 	Begins.add(f.tuple("Edge6", "Node5"));
-	Begins.add(f.tuple("Edge7", "Node5"));
 	b.boundExactly(begin , Begins);
 
 	final TupleSet Ends = f.noneOf(2);
@@ -105,8 +104,7 @@ public final Bounds getbounds(int scope) {
 	Ends.add(f.tuple("Edge3", "Node4"));
 	Ends.add(f.tuple("Edge4", "Node5"));
 	Ends.add(f.tuple("Edge5", "Node5"));
-	Ends.add(f.tuple("Edge6", "Node2"));
-	Ends.add(f.tuple("Edge7", "Node6"));
+	Ends.add(f.tuple("Edge6", "Node6"));
 	b.boundExactly(end , Ends);
 
 	final TupleSet Node1 = f.noneOf(1);									/* Node1 */
