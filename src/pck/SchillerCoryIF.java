@@ -96,7 +96,7 @@ public final Formula empty() {
 public final Bounds getbounds(int scope) {
 	assert scope > 0;
 	
-	final List<String> atoms = new ArrayList<String>(scope);
+	final List<String> atoms = new ArrayList<String>(scope+12);
 	for (int i = 1; i <= 6; i++)
 		atoms.add("Node" + i);
 	for (int i = 1; i <= 6; i++)
@@ -117,6 +117,15 @@ public final Bounds getbounds(int scope) {
 	b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 	b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
 
+	// enforcing the incremental visits.
+	final TupleSet Next = f.noneOf(2);
+	for(Integer i = 0; i < scope - 1; i++){
+		Integer plusone = i + 1;
+		Next.add(f.tuple("Visit"+i, "Visit"+plusone));
+	}
+	b.boundExactly(next, Next);
+	
+	
 	final TupleSet Begins = f.noneOf(2);
 	Begins.add(f.tuple("Edge1", "Node1"));
 	Begins.add(f.tuple("Edge2", "Node2"));
