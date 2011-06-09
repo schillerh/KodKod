@@ -52,11 +52,39 @@ public final Formula facts() {
 	/* There is a Visit before all other Visits, which references an Edge that Begins at the Start Node. */
 	/* There is a Visit after all other Visits, which references an Edge that Ends at the Finish Node. */
 	
-	
-	
-	
-	
-	return null;
+	final Variable v = Variable.unary("v");
+	final Variable w = Variable.unary("w");
+	final Variable e = Variable.unary("e");								/* n */
+	final Variable d = Variable.unary("d");								/* d */
+	/*	final Variable e = Variable.unary("e");	*/
+
+	/* CONFORMITY: The structure of the path conforms to the structure of the graph. */
+	final Formula f0 = v.join(next).eq(w);
+	final Formula f1 = v.join(ref).eq(e);								/* n */
+	final Formula f2 = w.join(ref).eq(d);								/* m */
+	final Formula f3 = d.join(begin).eq(e.join(end));					/* e	n */
+	/*	final Formula f4 = e.join(end).eq(m);	*/
+	final Formula f4 = f0.and(f1).and(f2).implies(f3);
+	final Formula f5 = f4.forAll(v.oneOf(Visit).and(w.oneOf(Visit)).and(e.oneOf(Edge)).and(d.oneOf(Edge)));
+
+	/* ACYCLICITY: The path is an acyclic sequence of Visits. */
+	final Formula f6 = v.in(w.join(next.reflexiveClosure()));
+	final Formula f7 = w.in(v.join(next.closure())).not();
+	final Formula f8 = f6.iff(f7).forAll(v.oneOf(Visit).and(w.oneOf(Visit)));
+
+	/* There is a Visit before all other Visits, which references an Edge that Begins at the Start Node. */
+	final Formula f9 = v.join(ref.join(begin)).eq(Start);
+	final Formula f10 = w.in(v.join(next.reflexiveClosure()));
+	final Formula f11 = f9.and(f10);
+	final Formula f12 = f11.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
+
+	/* There is a Visit after all other Visits, which references an Edge that Ends at the Finish Node. */
+	final Formula f13 = v.join(ref.join(end)).eq(Finish);
+	final Formula f14 = v.in(w.join(next.reflexiveClosure()));
+	final Formula f15 = f13.and(f14);
+	final Formula f16 = f15.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
+
+	return f5.and(f8).and(f12).and(f16);
 }
 
 
@@ -67,8 +95,7 @@ public final Formula empty() {
 
 public final Bounds getbounds(int scope) {
 	assert scope > 0;
-	final int n = scope + 13;
-	final List<String> atoms = new ArrayList<String>(n);
+	final List<String> atoms = new ArrayList<String>(scope);
 	for (int i = 1; i <= 6; i++)
 		atoms.add("Node" + i);
 	for (int i = 1; i <= 6; i++)
@@ -83,7 +110,7 @@ public final Bounds getbounds(int scope) {
 	final int max = scope - 1;
 	
 	b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node6")));				/* Java will not instantiate new Nodes. */
-	b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge7")));				/* Java will not instantiate new Edges. */
+	b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge6")));				/* Java will not instantiate new Edges. */
 	b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
 	
 	b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
@@ -121,9 +148,9 @@ public final Bounds getbounds(int scope) {
 @SuppressWarnings("rawtypes")
 public static void main(String[] args) {
 	try {
-		final PathIF model = new PathIF();							/* Path		Path */
+		final SchillerCoryIF model = new SchillerCoryIF();							/* Path		Path */
 		final Solver solver = new Solver();
-		final Bounds b = model.bounds(10);
+		final Bounds b = model.getbounds(10);
 		final Formula f = model.empty();
 		System.out.println(f);
 		solver.options().setSolver(SATFactory.DefaultSAT4J);
