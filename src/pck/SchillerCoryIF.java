@@ -95,6 +95,7 @@ public final Formula empty() {
 
 public final Bounds getbounds(int scope) {
 	assert scope > 0;
+	
 	final List<String> atoms = new ArrayList<String>(scope);
 	for (int i = 1; i <= 6; i++)
 		atoms.add("Node" + i);
@@ -150,7 +151,7 @@ public static void main(String[] args) {
 	try {
 		final SchillerCoryIF model = new SchillerCoryIF();							/* Path		Path */
 		final Solver solver = new Solver();
-		final Bounds b = model.getbounds(10);
+		final Bounds b = model.getbounds(4);
 		final Formula f = model.empty();
 		System.out.println(f);
 		solver.options().setSolver(SATFactory.DefaultSAT4J);
@@ -161,6 +162,7 @@ public static void main(String[] args) {
 			final Solution s = (Solution) iterSols.next();
 			if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
 				System.out.println(s);	
+				s.stats();
 			}
 		}
 	}	catch (NumberFormatException nfe) {}
