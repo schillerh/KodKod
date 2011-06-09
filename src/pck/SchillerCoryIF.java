@@ -35,7 +35,7 @@ public SchillerCoryIF(){
 	
 }
 
-
+//test
 public Formula declarations() {
 	final Formula f0 = begin.function(Edge, Node);
 	final Formula f1 = end.function(Edge, Node);
