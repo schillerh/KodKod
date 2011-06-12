@@ -11,11 +11,11 @@ import kodkod.engine.satlab.SATFactory;
 public class PathAMAZON {
 
 	private final Relation Node, Start, Finish;
-	
+
 	private final Relation Edge, begin, end;
-	
+
 	private final Relation Visit, ref, next;
-	
+
 	public PathAMAZON() {														/* Path */
 		Node = Relation.unary("Node");
 		Edge = Relation.unary("Edge");
@@ -29,29 +29,29 @@ public class PathAMAZON {
 		Start = Relation.unary("Start");
 		Finish = Relation.unary("Finish");
 	}
-	
+
 	public Formula declarations() {
 		final Formula f0 = begin.function(Edge, Node);
 		final Formula f1 = end.function(Edge, Node);
 		final Formula f2 = ref.function(Visit, Edge);						/* Node */
 		final Formula f3 = next.partialFunction(Visit, Visit);
-		
+
 		return f0.and(f1).and(f2).and(f3);
 	}
-	
+
 	public final Formula facts() {
 		final Variable v = Variable.unary("v");
 		final Variable w = Variable.unary("w");
 		final Variable e = Variable.unary("e");								/* n */
 		final Variable d = Variable.unary("d");								/* d */
-	/*	final Variable e = Variable.unary("e");	*/
-		
+		/*	final Variable e = Variable.unary("e");	*/
+
 		/* CONFORMITY: The structure of the path conforms to the structure of the graph. */
 		final Formula f0 = v.join(next).eq(w);
 		final Formula f1 = v.join(ref).eq(e);								/* n */
 		final Formula f2 = w.join(ref).eq(d);								/* m */
 		final Formula f3 = d.join(begin).eq(e.join(end));					/* e	n */
-	/*	final Formula f4 = e.join(end).eq(m);	*/
+		/*	final Formula f4 = e.join(end).eq(m);	*/
 		final Formula f4 = f0.and(f1).and(f2).implies(f3);
 		final Formula f5 = f4.forAll(v.oneOf(Visit).and(w.oneOf(Visit)).and(e.oneOf(Edge)).and(d.oneOf(Edge)));
 
@@ -74,10 +74,10 @@ public class PathAMAZON {
 
 		return f5.and(f8).and(f12).and(f16);
 	}
-	
+
 	public final Formula empty() {
- 		return declarations().and(facts());
- 	}
+		return declarations().and(facts());
+	}
 
 	public final Bounds bounds1(int scope) {
 		assert scope > 0;
@@ -93,15 +93,22 @@ public class PathAMAZON {
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-		
+
 		final int max = scope - 1;
-		
+
 		b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node7")));				
 		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge7")));				
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
-		
+
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
+
+		final TupleSet Next = f.noneOf(2);
+		for(Integer i = 0; i < scope - 1; i++){
+			Integer plusone = i + 1;
+			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
+		}
+		b.boundExactly(next, Next);
 
 		final TupleSet Begins = f.noneOf(2);
 		Begins.add(f.tuple("Edge1", "Node1"));
@@ -130,7 +137,7 @@ public class PathAMAZON {
 		final TupleSet Node7 = f.noneOf(1);									
 		Node7.add(f.tuple("Node7"));										
 		b.boundExactly(Finish , Node7);										
-	
+
 		return b;
 	}
 
@@ -148,15 +155,22 @@ public class PathAMAZON {
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-		
+
 		final int max = scope - 1;
-		
+
 		b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node5")));				
 		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge7")));				
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
-		
+
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
+
+		final TupleSet Next = f.noneOf(2);
+		for(Integer i = 0; i < scope - 1; i++){
+			Integer plusone = i + 1;
+			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
+		}
+		b.boundExactly(next, Next);
 
 		final TupleSet Begins = f.noneOf(2);
 		Begins.add(f.tuple("Edge1", "Node1"));
@@ -181,11 +195,11 @@ public class PathAMAZON {
 		final TupleSet StartNode = f.noneOf(1);									
 		StartNode.add(f.tuple("Node1"));										
 		b.boundExactly(Start , StartNode);
-		
+
 		final TupleSet FinishNode = f.noneOf(1);									
 		FinishNode.add(f.tuple("Node1"));										
 		b.boundExactly(Finish , FinishNode);										
-	
+
 		return b;
 	}
 
@@ -203,15 +217,22 @@ public class PathAMAZON {
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-		
+
 		final int max = scope - 1;
-		
+
 		b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node2")));				
 		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge1")));				
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
-		
+
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
+
+		final TupleSet Next = f.noneOf(2);
+		for(Integer i = 0; i < scope - 1; i++){
+			Integer plusone = i + 1;
+			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
+		}
+		b.boundExactly(next, Next);
 
 		final TupleSet Begins = f.noneOf(2);
 		Begins.add(f.tuple("Edge1", "Node1"));
@@ -228,43 +249,76 @@ public class PathAMAZON {
 		final TupleSet Node2 = f.noneOf(1);									
 		Node2.add(f.tuple("Node2"));		
 		b.boundExactly(Finish , Node2);
-	
+
 		return b;
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) {
 		try {
+			Integer input = 1;
 			final PathAMAZON model = new PathAMAZON();							/* Path		Path */
 			final Solver solver = new Solver();
 
-			final Bounds b1 = model.bounds1(7);
- 			final Bounds b2 = model.bounds2(3);
- 			final Bounds b3 = model.bounds3(1);
- 
+
+
+
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
-			
+
 			System.out.println(System.currentTimeMillis());
+			System.out.println("===========RUNNING PROJ 1==============");
+			Bounds b1 = model.bounds1(1);
 			Iterator iterSols1 = solver.solveAll(f , b1);
-			Iterator iterSols2 = solver.solveAll(f , b2);
-			Iterator iterSols3 = solver.solveAll(f , b3);
-			System.out.println(System.currentTimeMillis());
+			for(Integer i = 2; i < 30; i++){
+			System.out.println("Running : "+ i);
 			
-			while(iterSols1.hasNext()) {
-				final Solution s1 = (Solution) iterSols1.next();
-				System.out.println(s1);	
+			b1 = model.bounds1(i);
+			iterSols1 = solver.solveAll(f , b1);
+				while(iterSols1.hasNext()) {
+					
+					final Solution s1 = (Solution) iterSols1.next();
+					
+					System.out.println(s1);	
+				}
 			}
-			while(iterSols2.hasNext()) {
-				final Solution s2 = (Solution) iterSols2.next();
-				System.out.println(s2);	
+			
+			
+			System.out.println("===========RUNNING PROJ 2==============");
+			Bounds b2 = model.bounds2(1);
+			Iterator iterSols2 = solver.solveAll(f , b2);
+			for(Integer i = 2; i < 30; i++){
+			System.out.println("Running : "+ i);
+			
+			b2 = model.bounds2(i);
+			iterSols2 = solver.solveAll(f , b2);
+
+				while(iterSols2.hasNext()) {
+					final Solution s2 = (Solution) iterSols2.next();
+					
+					System.out.println(s2);	
+				}
 			}
-			while(iterSols3.hasNext()) {
-				final Solution s3 = (Solution) iterSols3.next();
-				System.out.println(s3);	
+			
+			System.out.println("===========RUNNING PROJ 3==============");
+			Bounds b3 = model.bounds3(1);
+			Iterator iterSols3 = solver.solveAll(f , b3);
+			for(Integer i = 2; i < 30; i++){
+			System.out.println("Running : "+ i);
+			
+			b3 = model.bounds3(i);
+			iterSols3 = solver.solveAll(f , b3);
+
+				while(iterSols2.hasNext()) {
+					final Solution s3 = (Solution) iterSols3.next();
+					
+					System.out.println(s3);	
+				}
 			}
- 
+
+			System.out.println(System.currentTimeMillis());
+
 		}	catch (NumberFormatException nfe) {}
 	}
 }
