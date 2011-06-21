@@ -14,13 +14,17 @@ public class PathIF {
 
 	private final Relation Edge, begin, end;
 
-	private final Relation Visit, ref, next;
+	private final Relation Visit, ref, next, Start_Loop, End_Loop, srt_ptr, end_ptr;
 
 	public PathIF() {														/* Path */
 		Node = Relation.unary("Node");
 		Edge = Relation.unary("Edge");
 		Visit = Relation.unary("Visit");
+		Start_Loop = Relation.unary("Start_Loop");
+		End_Loop = Relation.unary("End_Loop");
 
+		srt_ptr = Relation.binary("srt_ptr");
+		end_ptr = Relation.binary("end_ptr");
 		begin = Relation.binary("begin");
 		end = Relation.binary("end");
 		ref = Relation.binary("ref");
@@ -35,15 +39,18 @@ public class PathIF {
 		final Formula f1 = end.function(Edge, Node);
 		final Formula f2 = ref.function(Visit, Edge);						/* Node */
 		final Formula f3 = next.partialFunction(Visit, Visit);
-
-		return f0.and(f1).and(f2).and(f3);
+		final Formula fdec = srt_ptr.function(Start_Loop, Node);
+		final Formula fdec2 = end_ptr.function(End_Loop, Node);
+		return f0.and(f1).and(f2).and(f3).and(fdec).and(fdec2);
 	}
 
 	public final Formula facts() {
 		final Variable v = Variable.unary("v");
 		final Variable w = Variable.unary("w");
 		final Variable e = Variable.unary("e");								/* n */
-		final Variable d = Variable.unary("d");								/* d */
+		final Variable d = Variable.unary("d");				a				/* d */
+		final Variable srt = Variable.unary("srt");
+	//	final Variable end = Variable.unary("end");
 		/*	final Variable e = Variable.unary("e");	*/
 
 		/* CONFORMITY: The structure of the path conforms to the structure of the graph. */
@@ -71,8 +78,16 @@ public class PathIF {
 		final Formula f14 = v.in(w.join(next.reflexiveClosure()));
 		final Formula f15 = f13.and(f14);
 		final Formula f16 = f15.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
+		
+		
+		/* There is a Start_loop such that every ?????*/
+		final Formula f17 = w.in(v.join(next.closure())).not();
+//		final Formula f18 = srt.join(Start_Loop.join(srt_ptr)).eq(e.join(end));
+	//	final Formula f19 = w.in(v.join(next.reflexiveClosure()));
+		final Formula f20 = f17;
+		final Formula f21 = f20.forSome(w.oneOf(Visit)).forAll(srt.oneOf(Start_Loop));
 
-		return f5.and(f8).and(f12).and(f16);
+		return f5.and(f8).and(f12).and(f16).and(f21);
 	}
 
 	public final Formula empty() {
@@ -89,6 +104,10 @@ public class PathIF {
 			atoms.add("Edge" + i);
 		for (int i = 0; i < scope; i++)
 			atoms.add("Visit" + i);
+		for (int i = 0; i < 1; i++){
+			atoms.add("Start_Loop" + i);
+			atoms.add("End_Loop" + i);
+		}
 
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
@@ -99,9 +118,15 @@ public class PathIF {
 		b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node6")));				/* Java will not instantiate new Nodes. */
 		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge7")));				/* Java will not instantiate new Edges. */
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
-
+		b.bound(Start_Loop, f.range(f.tuple("Start_Loop0"), f.tuple("Start_Loop0")));
+		b.bound(End_Loop, f.range(f.tuple("End_Loop0"), f.tuple("End_Loop0")));
+		
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
+		
+		b.bound(srt_ptr, b.upperBound(Start_Loop).product(b.upperBound(Node)));
+		
+		b.bound(end_ptr, b.upperBound(End_Loop).product(b.upperBound(Node)));
 		
 		final TupleSet Next = f.noneOf(2);
 		for(Integer i = 0; i < scope - 1; i++){
