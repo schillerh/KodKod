@@ -48,8 +48,9 @@ public class PathIF {
 		final Variable v = Variable.unary("v");
 		final Variable w = Variable.unary("w");
 		final Variable e = Variable.unary("e");								/* n */
-		final Variable d = Variable.unary("d");				a				/* d */
+		final Variable d = Variable.unary("d");								/* d */
 		final Variable srt = Variable.unary("srt");
+		final Variable loo = Variable.unary("loo");
 	//	final Variable end = Variable.unary("end");
 		/*	final Variable e = Variable.unary("e");	*/
 
@@ -80,14 +81,17 @@ public class PathIF {
 		final Formula f16 = f15.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
 		
 		
-		/* There is a Start_loop such that every ?????*/
-		final Formula f17 = w.in(v.join(next.closure())).not();
-//		final Formula f18 = srt.join(Start_Loop.join(srt_ptr)).eq(e.join(end));
-	//	final Formula f19 = w.in(v.join(next.reflexiveClosure()));
-		final Formula f20 = f17;
-		final Formula f21 = f20.forSome(w.oneOf(Visit)).forAll(srt.oneOf(Start_Loop));
-
-		return f5.and(f8).and(f12).and(f16).and(f21);
+		
+		// one srt: srt_ptr, one v:node, one d:start_loop | v in v.^(~begin.end) IFF srt = loo->v
+		
+		
+		final Formula f17 = v.in(v.join       ((begin.transpose()).join(end)).closure()        );
+		final Formula f18 = srt.eq(loo.product(v));
+		final Formula f19 = f17.iff(f18);
+		final Formula f20 = f19.forAll(loo.oneOf(Start_Loop)).forAll(v.oneOf(Node)).forAll(srt.oneOf(srt_ptr));
+		
+		
+		return f5.and(f8).and(f12).and(f16).and(f20);
 	}
 
 	public final Formula empty() {
