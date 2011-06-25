@@ -85,8 +85,8 @@ public class PathIF {
 		// one srt: srt_ptr, one v:node, one d:start_loop | v in v.^(~begin.end) IFF srt = loo->v
 		
 		
-		final Formula f17 = v.in(v.join       ((begin.transpose()).join(end)).closure()        );
-		final Formula f18 = srt.eq(loo.product(v));
+		final Formula f17 = v.in(v.join(((begin.transpose()).join(end)).closure())        );
+		final Formula f18 = (loo.product(v)).in(srt);
 		final Formula f19 = f17.iff(f18);
 		final Formula f20 = f19.forAll(loo.oneOf(Start_Loop)).forAll(v.oneOf(Node)).forAll(srt.oneOf(srt_ptr));
 		
