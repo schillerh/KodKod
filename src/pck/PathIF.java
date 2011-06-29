@@ -49,7 +49,7 @@ public class PathIF {
 		final Variable w = Variable.unary("w");
 		final Variable e = Variable.unary("e");								/* n */
 		final Variable d = Variable.unary("d");								/* d */
-		final Variable srt = Variable.unary("srt");
+		final Variable srt = Variable.nary("srt", 2);
 		final Variable loo = Variable.unary("loo");
 	//	final Variable end = Variable.unary("end");
 		/*	final Variable e = Variable.unary("e");	*/
@@ -86,7 +86,7 @@ public class PathIF {
 		
 		
 		final Formula f17 = v.in(v.join(((begin.transpose()).join(end)).closure())        );
-		final Formula f18 = (loo.product(v)).in(srt);
+		final Formula f18 = ( (loo.product(v))).in(srt);
 		final Formula f19 = f17.iff(f18);
 		final Formula f20 = f19.forAll(loo.oneOf(Start_Loop)).forAll(v.oneOf(Node)).forAll(srt.oneOf(srt_ptr));
 		
