@@ -14,7 +14,7 @@ public class PathIF {
 
 	private final Relation Edge, begin, end;
 
-	private final Relation Visit, ref, next, start_loop, end_loop;
+	private final Relation Visit, ref, next, start_loop, end_loop, loop_set;
 
 	public PathIF() {														/* Path */
 		Node = Relation.unary("Node");
@@ -22,6 +22,7 @@ public class PathIF {
 		Visit = Relation.unary("Visit");
 		start_loop = Relation.unary("start_loop");
 		end_loop = Relation.unary("end_loop");
+		loop_set = Relation.unary("loop_set");
 
 
 		begin = Relation.binary("begin");
@@ -48,6 +49,7 @@ public class PathIF {
 		final Variable d = Variable.unary("d");								/* d */
 		final Variable n = Variable.unary("n");
 		final Variable st = Variable.unary("start_loop");
+		final Variable en = Variable.unary("en");
 	//	final Variable end = Variable.unary("end");
 		/*	final Variable e = Variable.unary("e");	*/
 
@@ -99,8 +101,22 @@ public class PathIF {
 		final Formula f27 = f26.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
 		
 		
+		// nodes in the loop set is the nodes reachable from the start node, minus the nodes reachable from the node after the end node.. so long as that NEXT node is not the start node.
+		// expression is the node after the end node. so long as it's not the start node.
+		final Expression afterEnd = (((en.join(begin.transpose())).join(end))).difference(st);
+		final Expression reachableFromStart = st.join(begEnd);
+		final Formula f28 = n.in(loop_set);
+		final Formula f29 = n.in((reachableFromStart.difference(afterEnd.join(begEnd))).difference(afterEnd));
+		final Formula f30 = f28.iff(f29);
+		final Formula f31 = f30.forAll(n.oneOf(Node).and(st.oneOf(start_loop)).and(en.oneOf(end_loop)));
+
+		
+		
+		
+		
+		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f27);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f27).and(f31);
 	}
 
 	public final Formula empty() {
@@ -129,6 +145,7 @@ public class PathIF {
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
 		b.bound(start_loop, f.range(f.tuple("Node1"), f.tuple("Node4")));
 		b.bound(end_loop, f.range(f.tuple("Node1"), f.tuple("Node4")));
+		b.bound(loop_set, f.range(f.tuple("Node1"), f.tuple("Node4")));
 		
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
