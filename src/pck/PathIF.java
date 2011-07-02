@@ -14,13 +14,14 @@ public class PathIF {
 
 	private final Relation Edge, begin, end;
 
-	private final Relation Visit, ref, next, start_loop;
+	private final Relation Visit, ref, next, start_loop, end_loop;
 
 	public PathIF() {														/* Path */
 		Node = Relation.unary("Node");
 		Edge = Relation.unary("Edge");
 		Visit = Relation.unary("Visit");
 		start_loop = Relation.unary("start_loop");
+		end_loop = Relation.unary("end_loop");
 
 
 		begin = Relation.binary("begin");
@@ -75,16 +76,31 @@ public class PathIF {
 		final Formula f14 = v.in(w.join(next.reflexiveClosure()));
 		final Formula f15 = f13.and(f14);
 		final Formula f16 = f15.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
+		// rechablefromN = set of nodes reachable from N.
+		// nodeb4N = going from beginning to end... set ofnodes that come before the node N
 		
-		final Formula f17 = n.in(n.join(((begin.transpose()).join(end)).closure()));
-		final Formula f18 = n.in(start_loop);
-		final Formula f19 = f17.iff(f18);
-		final Formula f20 = f19.forAll((n.oneOf(Node)));
+		// start loop nodes are nodes such that their transitive closure contains the node itself, but the node that comes before
+		// is not contained within the transitive closure.
+		final Expression reachableFromN = (n.join(((begin.transpose()).join(end)).closure()));
+		final Expression nodeb4N       = (n.join(end.transpose() )).join(begin);
+		final Formula f17 = n.in(reachableFromN);
+		final Formula f18 = (nodeb4N.in(reachableFromN)).not();
+		final Formula f19 = n.in(start_loop);
+		final Formula f20 = (f18.and(f17)  ).iff(f19);
+		final Formula f21 = f20.forAll((n.oneOf(Node)));
+		
+		final Expression begEnd = ((begin.transpose()).join(end)).closure();
+		final Formula f22 = n.in(st.join(begEnd)); // node in question is reachable from start node.
+		final Formula f23 = (st.in(n.join(begEnd))).not(); // start node is not reachable from node in question.
+		final Formula f24 = (f22.and(f23)).implies(n.in(end_loop));
+		final Formula f25 = f24.forAll((n.oneOf(Node).and(st.oneOf(start_loop))));
+		
+		
 		
 		
 		
 		// one srt: srt_ptr, one v:node, one d:start_loop | v in v.^(~begin.end) IFF srt = loo->v
-		return f5.and(f8).and(f12).and(f16).and(f20);
+		return f5.and(f8).and(f12).and(f16).and(f21);
 	}
 
 	public final Formula empty() {
@@ -112,6 +128,7 @@ public class PathIF {
 		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge4")));				/* Java will not instantiate new Edges. */
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
 		b.bound(start_loop, f.range(f.tuple("Node1"), f.tuple("Node4")));
+		b.bound(end_loop, f.range(f.tuple("Node1"), f.tuple("Node4")));
 		
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
