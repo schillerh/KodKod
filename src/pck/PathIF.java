@@ -179,9 +179,9 @@ public class PathIF {
 			System.out.println(System.currentTimeMillis());
 			while(iterSols.hasNext()) {
 				final Solution s = (Solution) iterSols.next();
-				//if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
+				if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
 					System.out.println(s);	
-				//}
+				}
 			}
 
 		}	catch (NumberFormatException nfe) {}
