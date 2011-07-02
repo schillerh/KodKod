@@ -89,18 +89,18 @@ public class PathIF {
 		final Formula f20 = (f18.and(f17)  ).iff(f19);
 		final Formula f21 = f20.forAll((n.oneOf(Node)));
 		
-		final Expression begEnd = ((begin.transpose()).join(end)).closure();
-		final Formula f22 = n.in(st.join(begEnd)); // node in question is reachable from start node.
-		final Formula f23 = (st.in(n.join(begEnd))).not(); // start node is not reachable from node in question.
-		final Formula f24 = (f22.and(f23)).implies(n.in(end_loop));
-		final Formula f25 = f24.forAll((n.oneOf(Node).and(st.oneOf(start_loop))));
+		final Expression begEnd = ((begin.transpose()).join(end)).closure(); // nodes reachable from node in question.
+        final Expression nextNode = (((n.join(begin.transpose())).join(end))).difference(st); // next node, so long as its not the start node in question.
+		final Formula f22 = n.in((st.join(begEnd))); // node in question reachable from start node in question.
+		final Formula f23 = st.in(       nextNode.join(begEnd)          ).not();   // start node is not reachable from the NEXT node after n.
+		final Formula f24 = n.in(end_loop);
+		final Formula f25 = (n.in(Finish)).not(); // keep the bloody SAT solver from using a finishing nodes empty transitive closure to break my rules.
+		final Formula f26 = f22.and(f23).and(f25).iff(f24);
+		final Formula f27 = f26.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
 		
 		
-		
-		
-		
-		// one srt: srt_ptr, one v:node, one d:start_loop | v in v.^(~begin.end) IFF srt = loo->v
-		return f5.and(f8).and(f12).and(f16).and(f21);
+	
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f27);
 	}
 
 	public final Formula empty() {
