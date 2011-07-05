@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import kodkod.ast.*;
+import kodkod.ast.operator.ExprCompOperator;
 import kodkod.instance.*;
 import kodkod.engine.*;
 import kodkod.engine.satlab.SATFactory;
@@ -48,8 +49,9 @@ public class PathIF {
 		final Variable e = Variable.unary("e");								/* n */
 		final Variable d = Variable.unary("d");								/* d */
 		final Variable n = Variable.unary("n");
-		final Variable st = Variable.unary("start_loop");
+		final Variable st = Variable.unary("st");
 		final Variable en = Variable.unary("en");
+		final Variable x = Variable.unary("x");
 	//	final Variable end = Variable.unary("end");
 		/*	final Variable e = Variable.unary("e");	*/
 
@@ -92,31 +94,66 @@ public class PathIF {
 		final Formula f21 = f20.forAll((n.oneOf(Node)));
 		
 		final Expression begEnd = ((begin.transpose()).join(end)).closure(); // nodes reachable from node in question.
-        final Expression nextNode = (((n.join(begin.transpose())).join(end))).difference(st); // next node, so long as its not the start node in question.
-		final Formula f22 = n.in((st.join(begEnd))); // node in question reachable from start node in question.
+        final Expression nextNodeN = (((n.join(begin.transpose())).join(end)));
+        
+        
+        
+        // SCHILLER's END SOLUTION
+      /*  final Formula f22 = x.in(nextNodeN);
+        final Formula f23 = n.in(n.join(begEnd));
+        //final Formula f24 =     (x.join(begEnd).compare(ExprCompOperator.EQUALS, n.join(begEnd)));
+        final Formula f24 = n.in(x.join(begEnd));
+        final Formula f25 = n.in(end_loop);
+        final Formula f26 = (f22.and(f23).and(f24).not()).iff(f25);
+        final Formula f27 = f26.forAll(x.oneOf(Node).and(n.oneOf(Node)));
+        
+        */
+        
+        
+        
+		
+        final Formula f22 = st.in(nextNodeN); // an end node is any node that has an immediate pointer to a start node.
+        final Formula f23 = n.in(end_loop);  // and is reachable from said start node.
+        final Formula f24 = n.in(st.join(begEnd));
+        final Formula f25 = (f22.and(f24)).iff(f23);
+        final Formula f26 = f25.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
+        
+        final Formula f27 = n.in(n.join(begEnd));
+        final Formula f28 = n.in(loop_set);
+        final Formula f29 = f27.iff(f28);
+        final Formula f30 = f29.forAll(n.oneOf(Node));
+        
+        
+        
+        
+        //OLD END LOOP FORMULAS
+        /*final Formula f22 = n.in((st.join(begEnd))); // node in question reachable from start node in question.
 		final Formula f23 = st.in(       nextNode.join(begEnd)          ).not();   // start node is not reachable from the NEXT node after n.
 		final Formula f24 = n.in(end_loop);
 		final Formula f25 = (n.in(Finish)).not(); // keep the bloody SAT solver from using a finishing nodes empty transitive closure to break my rules.
 		final Formula f26 = f22.and(f23).and(f25).iff(f24);
 		final Formula f27 = f26.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
+		*/
 		
-		
+        
+        //OLD LOOP_SET FORMULA
 		// nodes in the loop set is the nodes reachable from the start node, minus the nodes reachable from the node after the end node.. so long as that NEXT node is not the start node.
 		// expression is the node after the end node. so long as it's not the start node.
-		final Expression afterEnd = (((en.join(begin.transpose())).join(end))).difference(st);
+		/*final Expression afterEnd = (((en.join(begin.transpose())).join(end))).difference(st);
 		final Expression reachableFromStart = st.join(begEnd);
 		final Formula f28 = n.in(loop_set);
 		final Formula f29 = n.in((reachableFromStart.difference(afterEnd.join(begEnd))).difference(afterEnd));
 		final Formula f30 = f28.iff(f29);
 		final Formula f31 = f30.forAll(n.oneOf(Node).and(st.oneOf(start_loop)).and(en.oneOf(end_loop)));
 
-		
+		*/
 		
 		
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f27).and(f31);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f26).and(f30);
+//.and(f21).and(f27).and(f31);
 	}
 
 	public final Formula empty() {
@@ -127,9 +164,9 @@ public class PathIF {
 		assert scope > 0;
 		final int n = scope + 13;
 		final List<String> atoms = new ArrayList<String>(n);
-		for (int i = 1; i <= 4; i++)
+		for (int i = 1; i <= 6; i++)
 			atoms.add("Node" + i);
-		for (int i = 1; i <= 4; i++)
+		for (int i = 1; i <= 7; i++)
 			atoms.add("Edge" + i);
 		for (int i = 0; i < scope; i++)
 			atoms.add("Visit" + i);
@@ -140,12 +177,12 @@ public class PathIF {
 
 		final int max = scope - 1;
 
-		b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node4")));				/* Java will not instantiate new Nodes. */
-		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge4")));				/* Java will not instantiate new Edges. */
+		b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node6")));				/* Java will not instantiate new Nodes. */
+		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge7")));				/* Java will not instantiate new Edges. */
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
-		b.bound(start_loop, f.range(f.tuple("Node1"), f.tuple("Node4")));
-		b.bound(end_loop, f.range(f.tuple("Node1"), f.tuple("Node4")));
-		b.bound(loop_set, f.range(f.tuple("Node1"), f.tuple("Node4")));
+		b.bound(start_loop, f.range(f.tuple("Node1"), f.tuple("Node6")));
+		b.bound(end_loop, f.range(f.tuple("Node1"), f.tuple("Node6")));
+		b.bound(loop_set, f.range(f.tuple("Node1"), f.tuple("Node6")));
 		
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
@@ -162,23 +199,29 @@ public class PathIF {
 		Begins.add(f.tuple("Edge1", "Node1"));
 		Begins.add(f.tuple("Edge2", "Node2"));
 		Begins.add(f.tuple("Edge3", "Node3"));
-		Begins.add(f.tuple("Edge4", "Node3"));
+		Begins.add(f.tuple("Edge4", "Node4"));
+		Begins.add(f.tuple("Edge5", "Node4"));
+		Begins.add(f.tuple("Edge6", "Node2"));
+		Begins.add(f.tuple("Edge7", "Node5"));
 		b.boundExactly(begin , Begins);
 
 		final TupleSet Ends = f.noneOf(2);
 		Ends.add(f.tuple("Edge1", "Node2"));
 		Ends.add(f.tuple("Edge2", "Node3"));
 		Ends.add(f.tuple("Edge3", "Node4"));
-		Ends.add(f.tuple("Edge4", "Node2"));
+		Ends.add(f.tuple("Edge4", "Node5"));
+		Ends.add(f.tuple("Edge5", "Node2"));
+		Ends.add(f.tuple("Edge6", "Node5"));
+		Ends.add(f.tuple("Edge7", "Node6"));
 		b.boundExactly(end , Ends);
 
 		final TupleSet Node1 = f.noneOf(1);									/* Node1 */
 		Node1.add(f.tuple("Node1"));										/* Node1 */
 		b.boundExactly(Start , Node1);										/* Node1 */
 
-		final TupleSet Node4 = f.noneOf(1);									/* Node4 */
-		Node4.add(f.tuple("Node4"));										/* Node4 */
-		b.boundExactly(Finish , Node4);										/* Node4 */
+		final TupleSet Node6 = f.noneOf(1);									/* Node4 */
+		Node6.add(f.tuple("Node6"));										/* Node4 */
+		b.boundExactly(Finish , Node6);										/* Node4 */
 
 		return b;
 	}
@@ -187,7 +230,7 @@ public class PathIF {
 		try {
 			final PathIF model = new PathIF();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.bounds(3);
+			final Bounds b = model.bounds(5);
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
