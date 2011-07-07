@@ -187,11 +187,7 @@ public class PathIF {
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
 		
-<<<<<<< HEAD
-=======
-		
->>>>>>> 7be8636aaba4363101f73b05e85e6f7c984624bf
-		final TupleSet Next = f.noneOf(2);
+final TupleSet Next = f.noneOf(2);
 		for(Integer i = 0; i < scope - 1; i++){
 			Integer plusone = i + 1;
 			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
