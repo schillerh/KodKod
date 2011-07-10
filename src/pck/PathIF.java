@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Iterator;
 import kodkod.ast.*;
 import kodkod.ast.operator.ExprCompOperator;
+import kodkod.ast.operator.ExprOperator;
 import kodkod.instance.*;
 import kodkod.engine.*;
 import kodkod.engine.satlab.SATFactory;
@@ -13,7 +14,7 @@ public class PathIF {
 
 	private final Relation Node, Start, Finish;
 
-	private final Relation Edge, begin, end;
+	private final Relation Edge, begin, end, corresp;
 
 	private final Relation Visit, ref, next, start_loop, end_loop, loop_set;
 
@@ -30,6 +31,7 @@ public class PathIF {
 		end = Relation.binary("end");
 		ref = Relation.binary("ref");
 		next = Relation.binary("next");
+		corresp = Relation.binary("corresp");
 
 		Start = Relation.unary("Start");
 		Finish = Relation.unary("Finish");
@@ -38,8 +40,9 @@ public class PathIF {
 	public Formula declarations() {
 		final Formula f0 = begin.function(Edge, Node);
 		final Formula f1 = end.function(Edge, Node);
-		final Formula f2 = ref.function(Visit, Edge);						/* Node */
+		final Formula f2 = ref.function(Visit, Edge);	/* Node */
 		final Formula f3 = next.partialFunction(Visit, Visit);
+		final Formula f4 = corresp.function(start_loop, end_loop);
 		return f0.and(f1).and(f2).and(f3);
 	}
 
@@ -123,6 +126,12 @@ public class PathIF {
         final Formula f29 = f27.iff(f28);
         final Formula f30 = f29.forAll(n.oneOf(Node));
         
+        final Formula f31 = x.in(start_loop);
+        final Formula f32 = n.in(end_loop);
+        final Formula f33 = x.in(nextNodeN);
+        final Formula f34 = x.product(n).in(corresp);
+        final Formula f35 = f34.iff(f33.and(f32).and(f31));
+        final Formula f36 = f35.forAll(n.oneOf(Node).and(x.oneOf(Node)));
         
         
         
@@ -152,14 +161,14 @@ public class PathIF {
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f26).and(f30);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f26).and(f30).and(f36);
 //.and(f21).and(f27).and(f31);
 	}
 
 	public final Formula empty() {
 		return declarations().and(facts());
 	}
-
+/* this is the old bounds function that was provided. */ 
 	public final Bounds bounds(int scope) {
 		assert scope > 0;
 		final int n = scope + 13;
@@ -176,7 +185,6 @@ public class PathIF {
 		final Bounds b = new Bounds(u);
 
 		final int max = scope - 1;
-
 		b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node6")));				/* Java will not instantiate new Nodes. */
 		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge7")));				/* Java will not instantiate new Edges. */
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
@@ -186,6 +194,8 @@ public class PathIF {
 		
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
+		
+		b.bound(corresp, b.upperBound(start_loop).product(b.upperBound(end_loop)));
 		
 		
 		final TupleSet Next = f.noneOf(2);
@@ -225,6 +235,8 @@ public class PathIF {
 
 		return b;
 	}
+
+	
 	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) {
 		try {
