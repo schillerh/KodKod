@@ -95,25 +95,40 @@ public class Graph {
 			// collect node names.
 			String temp = scan.next();
 			String[] nodeinp = temp.split(",");
+			for(Integer i = 0; i < nodeinp.length; i++){
+				Nodes.add(nodeinp[i]);
+			}
+
+			
+			
+			
 			
 			// collect edges
 			temp = scan.next();
 			String[] edgeinp = temp.split(",");
+			for(Integer i = 0; i < edgeinp.length; i++){
+				Edge.add(edgeinp[i]);
+			}
+			
+		
+			
+			
 			
 			// collect start point.
 			temp = scan.next();
-			String startpt = temp;
+			StartPt = temp;
 			
 			// collect end point.
 			temp = scan.next();
-			String endpt = temp;
+			endPt = temp;
 		
 			// collect number of visits.
 			temp = scan.next();
-			Integer vistNum = Integer.valueOf(temp);
+			numVisits = Integer.valueOf(temp);
 			
 			temp = scan.next();
 			String[] compHolder = temp.split("/");
+			
 			for(Integer i = 0; i < compHolder.length; i++){
 				//temp is now just a tuple of format "Edge1,Node1
 				temp = compHolder[i];
@@ -127,7 +142,6 @@ public class Graph {
 				temp = compHolder[i];
 				end.add(this.CreatePair(temp.split(",")[0], temp.split(",")[1]) );
 			}
-			
 			
 			
 			
