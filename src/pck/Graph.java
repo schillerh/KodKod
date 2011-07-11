@@ -285,8 +285,7 @@ public class Graph {
 	public static void main(String[] argc){
 		Graph test  = new Graph();
 		test.readFile("src/graphs/input.txt");
-		System.out.println("blablah");
-		
+		System.out.println("test complete");
 	}
 	
 	
