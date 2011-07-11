@@ -13,11 +13,26 @@ import java.util.Scanner;
  */
 public class Graph {
 	
-	private ArrayList<String> Nodes;
-	private ArrayList<String> Edge;
-	private ArrayList<Pair> begin;
-	private ArrayList<Pair> end;
-	
+	private ArrayList<String> Nodes = new ArrayList<String>();
+	private ArrayList<String> Edge = new ArrayList<String>();
+	private ArrayList<Pair> begin = new ArrayList<Pair>();
+	private ArrayList<Pair> end = new ArrayList<Pair>();
+	private Integer numVisits = new Integer(0);
+	String StartPt, endPt = new String();
+
+	/**
+	 * blank constructor for graph class, just creates a blank graph.
+	 */
+	public Graph(){
+		
+		Nodes = new ArrayList<String>();
+		Edge = new ArrayList<String>();
+		begin = new ArrayList<Pair>();
+		end = new ArrayList<Pair>();
+		numVisits = new Integer(0);
+		StartPt= endPt = new String();
+
+	}
 	
 	/**
 	 * Consructor for graph class.
@@ -33,7 +48,11 @@ public class Graph {
 	public Graph(ArrayList<String> Nodes, ArrayList<String> Edge, ArrayList<Pair> begin, ArrayList<Pair> end, Integer numVisits, String StartPt, String endPt) throws Exception{
 		assert Nodes != null;
 		assert Edge != null;
-		assert numVisits != 0;
+		assert numVisits > 0;
+		assert numVisits <= 100;
+		assert begin.size() == Nodes.size();
+		assert end.size() ==   Nodes.size();
+		
 		if(! Nodes.contains(StartPt)){
 			throw new Exception("Start Node is not in the set of nodes");
 		}
@@ -47,6 +66,8 @@ public class Graph {
 		this.StartPt = StartPt;
 		this.endPt = endPt;
 		this.numVisits = numVisits;
+		this.begin = begin;
+		this.end   = end;
 	}
 	
 	
@@ -56,10 +77,13 @@ public class Graph {
 	 * reads an input file and sets up the graph in question. format is as follows:
 	 * Line# line-text. no trailing commas, no spaces.
 	 * 
-	 * 0 Node1,Node2,Node3,Node4
-	 * 1 Edge1,Edge2,Edge3
-	 * 2
-	 * 
+	 * 0 Node1,Node2,Node3,Node4  // comma separated list of node names.
+	 * 1 Edge1,Edge2,Edge3        // comma separated list of edge names
+	 * 2 Node1                    // name of start node.
+	 * 3 Node4                    // name of end node.
+	 * 4 3                        // number of steps you want to complete the path in.... in terms of edges.
+	 * 5 Edge1,Node1/Edge2,Node2                         // begin tupples
+	 * 6 Edge1,Node1/Edge2,Node2
 	 * 
 	 * 
 	 * 
@@ -68,17 +92,77 @@ public class Graph {
 	public void readFile(String inputFileName){
 		try {
 			Scanner scan = new Scanner(new File(inputFileName));
+			// collect node names.
+			String temp = scan.next();
+			String[] nodeinp = temp.split(",");
+			
+			// collect edges
+			temp = scan.next();
+			String[] edgeinp = temp.split(",");
+			
+			// collect start point.
+			temp = scan.next();
+			String startpt = temp;
+			
+			// collect end point.
+			temp = scan.next();
+			String endpt = temp;
+		
+			// collect number of visits.
+			temp = scan.next();
+			Integer vistNum = Integer.valueOf(temp);
+			
+			temp = scan.next();
+			String[] compHolder = temp.split("/");
+			for(Integer i = 0; i < compHolder.length; i++){
+				//temp is now just a tuple of format "Edge1,Node1
+				temp = compHolder[i];
+				begin.add(this.CreatePair(temp.split(",")[0], temp.split(",")[1]) );
+			}
+			
+			temp = scan.next();
+			compHolder = temp.split("/");
+			for(Integer i = 0; i < compHolder.length; i++){
+				//temp is now just a tuple of format "Edge1,Node1
+				temp = compHolder[i];
+				end.add(this.CreatePair(temp.split(",")[0], temp.split(",")[1]) );
+			}
+			
+			
+			
+			
+			
 			
 			
 			
 			
 		} catch (FileNotFoundException e) {
 			System.out.println( e.getMessage() );
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		
 		
 		
+	}
+	
+	/**
+	 * creates a pair for use as either a begin or end tuple.
+	 * @param x - string. should refer to an existing edge.
+	 * @param y - string. should refer to an existing node.
+	 * @return -  returns pair composed of x and y.
+	 * @throws Exception - throws an exception if X is not in the set of edges, or Y is not in the set of nodes.
+	 */
+	private Pair CreatePair(String x, String y) throws Exception{
+		if(!Edge.contains(x)){
+			throw new Exception("tried to connect an edge" +  x + " that doesn't exist");
+		}
+		if(!Nodes.contains(y)){
+			throw new Exception("tryed to add a valid edge that connects to a node " +  y + " that doesn't exist.");
+		}
+		return new Pair(x,y);
 	}
 	
 	
@@ -95,6 +179,34 @@ public class Graph {
 	
 	
 	
+	public ArrayList<Pair> getBegin() {
+		return begin;
+	}
+
+
+
+
+	public void setBegin(ArrayList<Pair> begin) {
+		this.begin = begin;
+	}
+
+
+
+
+	public ArrayList<Pair> getEnd() {
+		return end;
+	}
+
+
+
+
+	public void setEnd(ArrayList<Pair> end) {
+		this.end = end;
+	}
+
+
+
+
 	/**
 	 * returns the nodes.
 	 * @return returns ArrayList of node names in graph.
@@ -151,13 +263,17 @@ public class Graph {
 		this.endPt = endPt;
 	}
 
-
-	private Integer numVisits;
-	String StartPt, endPt;
-
 	
-	
-	
+	/**
+	 * short test for the graph.java class.
+	 * @param argc - ignore.
+	 */
+	public static void main(String[] argc){
+		Graph test  = new Graph();
+		test.readFile("src/graphs/input.txt");
+		System.out.println("blablah");
+		
+	}
 	
 	
 	
