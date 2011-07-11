@@ -248,12 +248,12 @@ public class Graph {
 	}
 
 
-	public Integer getNumVisits() {
+	public Integer getnumVisits() {
 		return numVisits;
 	}
 
 
-	public void setNumVisits(Integer numVisits) {
+	public void setnumVisits(Integer numVisits) {
 		this.numVisits = numVisits;
 	}
 

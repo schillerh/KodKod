@@ -169,28 +169,47 @@ public class PathIF {
 		return declarations().and(facts());
 	}
 /* this is the old bounds function that was provided. */ 
-	public final Bounds bounds(int scope) {
-		assert scope > 0;
-		final int n = scope + 13;
-		final List<String> atoms = new ArrayList<String>(n);
-		for (int i = 1; i <= 6; i++)
-			atoms.add("Node" + i);
-		for (int i = 1; i <= 7; i++)
-			atoms.add("Edge" + i);
-		for (int i = 0; i < scope; i++)
-			atoms.add("Visit" + i);
+	public final Bounds buildGraph(String filename) {
+		
+		Graph jpx = new Graph();
+		jpx.readFile(filename);
 
+		Integer scope = jpx.getnumVisits();
+		assert scope > 0;
+		
+		final List<String> atoms = new ArrayList<String>(40);
+		atoms.addAll(jpx.getNodes());
+		Integer numNodes = jpx.getNodes().size();
+		
+		atoms.addAll(jpx.getEdge());
+		
+
+
+		
+
+
+		Integer temp = jpx.getnumVisits();
+		System.out.println("maxvis = "+ temp);
+		for (int i = 0; i < temp; i++){
+			atoms.add("Visit" + i);
+		}
+		
+		
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-
 		final int max = scope - 1;
-		b.bound(Node, f.range(f.tuple("Node1"), f.tuple("Node6")));				/* Java will not instantiate new Nodes. */
-		b.bound(Edge, f.range(f.tuple("Edge1"), f.tuple("Edge7")));				/* Java will not instantiate new Edges. */
-		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + max)));
-		b.bound(start_loop, f.range(f.tuple("Node1"), f.tuple("Node6")));
-		b.bound(end_loop, f.range(f.tuple("Node1"), f.tuple("Node6")));
-		b.bound(loop_set, f.range(f.tuple("Node1"), f.tuple("Node6")));
+
+		
+		
+		
+		/* Java will not instantiate new Nodes. */
+		b.bound(Node, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
+		b.bound(Edge, f.range(f.tuple(jpx.getEdge().get(0)), f.tuple( jpx.getEdge().get(jpx.getEdge().size()-1))));				/* Java will not instantiate new Edges. */
+		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + String.valueOf( Integer.valueOf( jpx.getnumVisits()) - 1 ))));
+		b.bound(start_loop, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
+		b.bound(end_loop, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
+		b.bound(loop_set, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
@@ -225,13 +244,13 @@ public class PathIF {
 		Ends.add(f.tuple("Edge7", "Node6"));
 		b.boundExactly(end , Ends);
 
-		final TupleSet Node1 = f.noneOf(1);									/* Node1 */
-		Node1.add(f.tuple("Node1"));										/* Node1 */
-		b.boundExactly(Start , Node1);										/* Node1 */
+		final TupleSet start = f.noneOf(1);		
+		start.add(f.tuple(jpx.getStartPt()));										/* Node1 */
+		b.boundExactly(Start , start);										/* Node1 */
 
-		final TupleSet Node6 = f.noneOf(1);									/* Node4 */
-		Node6.add(f.tuple("Node6"));										/* Node4 */
-		b.boundExactly(Finish , Node6);										/* Node4 */
+		final TupleSet en = f.noneOf(1);									/* Node4 */
+		en.add(f.tuple(jpx.getEndPt()));										/* Node4 */
+		b.boundExactly(Finish , en);										/* Node4 */
 
 		return b;
 	}
@@ -242,7 +261,7 @@ public class PathIF {
 		try {
 			final PathIF model = new PathIF();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.bounds(5);
+			final Bounds b = model.buildGraph("src/graphs/input.txt");
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
