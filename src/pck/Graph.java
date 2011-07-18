@@ -192,28 +192,40 @@ public class Graph {
 	
 	
 	
-	
+	/**
+	 * returns a java.util.ArrayList of pairs in the format of (Edge,Node) such that Edge is an edge in the universe, and Node is the node that edge ends on.
+	 * @return - ArrayList of pairs of format (Edge,Node) such that edge is an edge in the universe, and node is a node on which that edge ends upon.
+	 */
 	public ArrayList<Pair> getBegin() {
 		return begin;
 	}
 
 
 
-
+	/**
+	 * Sets the begin of all edges in the universe.
+	 * @param begin - Accepts Pairs of type (Edge,Node) where an edge is the edge in question and the node is the node that edge begins on.
+	 */
 	public void setBegin(ArrayList<Pair> begin) {
 		this.begin = begin;
 	}
 
 
 
-
+/**
+ * returns a listing of all edge end points in the universe.
+ * @return - returns a pair in the format of (Edge,Node) where the edge is an edge that exists in the universe, and a node is the node where that edge ends.
+ */
 	public ArrayList<Pair> getEnd() {
 		return end;
 	}
 
 
 
-
+/**
+ * Sets the end ofall edges in the universe.
+ * @param end - Accepts Pairs of type (Edge,Node) where an edge is the edge in question and the node is the node taht edge ends on.
+ */
 	public void setEnd(ArrayList<Pair> end) {
 		this.end = end;
 	}
@@ -237,44 +249,113 @@ public class Graph {
 		Nodes = nodes;
 	}
 
-
+/**
+ * Returns a list of all edges that currently exist in the universe.
+ * @return - returns java.util.ArrayList<String> containing all edges in the universe.
+ */
 	public ArrayList<String> getEdge() {
 		return Edge;
 	}
 
-
+/**
+ * Sets names of all edges that exist in the universe.
+ * @param edge - takes java.util.ArrayList<String> which contains all edges that will later exist in the universe.
+ */
 	public void setEdge(ArrayList<String> edge) {
 		Edge = edge;
 	}
 
 
+	/**
+	 * returns number of edges you want in your traversed path.
+	 * @return - Integer.
+	 */
 	public Integer getnumVisits() {
 		return numVisits;
 	}
 
-
+/**
+ * sets the current number of steps you want to complete the path in. This is counted in terms of edges.
+ * @param numVisits - number of edges you want to traverse in your finished path.
+ */
 	public void setnumVisits(Integer numVisits) {
 		this.numVisits = numVisits;
 	}
 
-
+/**
+ * retrieves current start of path
+ * @return  - String name of node.
+ */
 	public String getStartPt() {
 		return StartPt;
 	}
 
-
+/**
+ * sets name of start node of path. must exist within the set of nodes.
+ * @param startPt - String name of start node of path, must exist within set of nodes.
+ */
 	public void setStartPt(String startPt) {
 		StartPt = startPt;
 	}
 
-
+/**
+ * retrieves string name of endpoint
+ * @return - String, name of current end of path node.
+ */
 	public String getEndPt() {
 		return endPt;
 	}
 
-
+/**
+ * sets internal endpoint to the endpoint specified, end point being the node at the end of the path.
+ * @param endPt - String name of node to be set. this must exist within the set of nodes or you'll run into problems later.
+ */
 	public void setEndPt(String endPt) {
 		this.endPt = endPt;
+	}
+	
+	/**
+	 * Outputs the content of this graph to console.
+	 */
+	public void printMe(){
+		System.out.println("==================================================");
+		System.out.println("Current Graph Contains:");
+		System.out.println("");
+		System.out.println("Nodes: ");
+		System.out.println(Nodes.toString());
+		System.out.println("");
+		System.out.println("Edges: ");
+		System.out.println(Edge.toString());
+		
+		System.out.println("");
+		
+		System.out.println("StartNode: " + StartPt.toString());
+		System.out.println("");
+		System.out.println("EndNode: " + endPt.toString());
+		System.out.println("");
+		
+		System.out.println("Begin Pairs :");
+		for(int i = 0; i < begin.size(); i++){
+			System.out.println("( " + begin.get(i).getX() + ", " + begin.get(i).getY() + " )");
+		}
+		System.out.println("");
+		System.out.println("End Pairs : ");
+		for(int i = 0; i < end.size(); i++){
+			System.out.println("( " + end.get(i).getX() + ", " + end.get(i).getY() + " )");
+		}
+		
+	System.out.println();
+	System.out.println("Num Visits == " + numVisits);
+	
+	System.out.println("");
+	System.out.println("Proper Edges: ");
+	for(int i = 0; i < begin.size(); i++){
+		System.out.println("( " + begin.get(i).getY() + " , " + end.get(i).getY() + " )");
+	}
+		
+	System.out.println();
+	System.out.println("==================================================");
+		
 	}
 
 	
@@ -284,7 +365,8 @@ public class Graph {
 	 */
 	public static void main(String[] argc){
 		Graph test  = new Graph();
-		test.readFile("src/graphs/input.txt");
+		test.readFile("src/graphs/input2.txt");
+		test.printMe();
 		System.out.println("test complete");
 	}
 	

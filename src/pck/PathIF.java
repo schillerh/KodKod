@@ -114,7 +114,7 @@ public class PathIF {
         
         
         
-		
+		// THIS IS BREAKING IT.
         final Formula f22 = st.in(nextNodeN); // an end node is any node that has an immediate pointer to a start node.
         final Formula f23 = n.in(end_loop);  // and is reachable from said start node.
         final Formula f24 = n.in(st.join(begEnd));
@@ -161,7 +161,8 @@ public class PathIF {
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f26).and(f30).and(f36);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36);
+		//and f26
 //.and(f21).and(f27).and(f31);
 	}
 
@@ -225,23 +226,16 @@ public class PathIF {
 		b.boundExactly(next, Next);
 
 		final TupleSet Begins = f.noneOf(2);
-		Begins.add(f.tuple("Edge1", "Node1"));
-		Begins.add(f.tuple("Edge2", "Node2"));
-		Begins.add(f.tuple("Edge3", "Node3"));
-		Begins.add(f.tuple("Edge4", "Node4"));
-		Begins.add(f.tuple("Edge5", "Node4"));
-		Begins.add(f.tuple("Edge6", "Node2"));
-		Begins.add(f.tuple("Edge7", "Node5"));
+		for(Integer i = 0; i < jpx.getBegin().size(); i++){
+		Begins.add(f.tuple(jpx.getBegin().get(i).getX(), jpx.getBegin().get(i).getY()));
+		}
 		b.boundExactly(begin , Begins);
 
+		
 		final TupleSet Ends = f.noneOf(2);
-		Ends.add(f.tuple("Edge1", "Node2"));
-		Ends.add(f.tuple("Edge2", "Node3"));
-		Ends.add(f.tuple("Edge3", "Node4"));
-		Ends.add(f.tuple("Edge4", "Node5"));
-		Ends.add(f.tuple("Edge5", "Node2"));
-		Ends.add(f.tuple("Edge6", "Node5"));
-		Ends.add(f.tuple("Edge7", "Node6"));
+		for(Integer i = 0; i < jpx.getEnd().size(); i++){
+		Ends.add(f.tuple(jpx.getEnd().get(i).getX(), jpx.getEnd().get(i).getY()));
+		}
 		b.boundExactly(end , Ends);
 
 		final TupleSet start = f.noneOf(1);		
@@ -261,7 +255,7 @@ public class PathIF {
 		try {
 			final PathIF model = new PathIF();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph("src/graphs/input.txt");
+			final Bounds b = model.buildGraph("src/graphs/input2.txt");
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
