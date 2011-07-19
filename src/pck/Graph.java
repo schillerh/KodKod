@@ -365,7 +365,11 @@ public class Graph {
 	 */
 	public static void main(String[] argc){
 		Graph test  = new Graph();
+		test.readFile("src/graphs/input.txt");
+		test.printMe();
 		test.readFile("src/graphs/input2.txt");
+		test.printMe();
+		test.readFile("src/graphs/input3.txt");
 		test.printMe();
 		System.out.println("test complete");
 	}

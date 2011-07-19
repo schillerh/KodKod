@@ -55,6 +55,7 @@ public class PathIF {
 		final Variable st = Variable.unary("st");
 		final Variable en = Variable.unary("en");
 		final Variable x = Variable.unary("x");
+		final Variable x2 = Variable.unary("x2");
 	//	final Variable end = Variable.unary("end");
 		/*	final Variable e = Variable.unary("e");	*/
 
@@ -114,12 +115,25 @@ public class PathIF {
         
         
         
-		// THIS IS BREAKING IT.
-        final Formula f22 = st.in(nextNodeN); // an end node is any node that has an immediate pointer to a start node.
+		// TODO THIS IS BREAKING IT.
+       /* final Formula f22 = st.in(nextNodeN); // an end node is any node that has an immediate pointer to a start node.
         final Formula f23 = n.in(end_loop);  // and is reachable from said start node.
         final Formula f24 = n.in(st.join(begEnd));
-        final Formula f25 = (f22.and(f24)).iff(f23);
+        final Formula fxx = f22.and(f24);
+        final Formula f25 = fxx.iff(f23);
         final Formula f26 = f25.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
+        */
+        
+        final Formula f25 = st.in( ((x2.join(begin.transpose())).join(end)));
+        final Formula xxx = st.in(start_loop);
+        final Formula f24 = x2.in(st.join(begEnd));
+        final Formula f23 = x2.in(end_loop);
+        final Formula f26 = ((f25.and(f24)).and(xxx)).iff(f23);
+        final Formula xx  = f26.forAll(st.oneOf(start_loop).and(x2.oneOf(Node)));
+        
+        
+        
+        
         
         final Formula f27 = n.in(n.join(begEnd));
         final Formula f28 = n.in(loop_set);
@@ -161,7 +175,7 @@ public class PathIF {
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36).and(xx);
 		//and f26
 //.and(f21).and(f27).and(f31);
 	}
@@ -255,7 +269,7 @@ public class PathIF {
 		try {
 			final PathIF model = new PathIF();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph("src/graphs/input2.txt");
+			final Bounds b = model.buildGraph("src/graphs/input.txt");
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
