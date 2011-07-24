@@ -10,7 +10,7 @@ import kodkod.instance.*;
 import kodkod.engine.*;
 import kodkod.engine.satlab.SATFactory;
 
-public class PathIF {
+public class PathFinder {
 
 	private final Relation Node, Start, Finish;
 
@@ -18,7 +18,7 @@ public class PathIF {
 
 	private final Relation Visit, ref, next, start_loop, end_loop, loop_set;
 
-	public PathIF() {														/* Path */
+	public PathFinder() {														/* Path */
 		Node = Relation.unary("Node");
 		Edge = Relation.unary("Edge");
 		Visit = Relation.unary("Visit");
@@ -116,13 +116,31 @@ public class PathIF {
         
         
 		// TODO THIS IS BREAKING IT.
-        final Formula f22 = st.in(nextNodeN); // an end node is any node that has an immediate pointer to a start node.
-        final Formula f23 = n.in(end_loop);  // and is reachable from said start node.
-        final Formula f24 = n.in(st.join(begEnd));
-        final Formula fxx = f22.and(f24);
-        final Formula f25 = fxx.iff(f23);
-        final Formula f26 = f25.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
+//        final Formula f22 = st.in(n.join(end.transpose()).join(end));
+
+
         
+        
+        
+        
+        
+        
+        // 2nd attempt.
+        /*
+        final Formula f22 = n.in((st.join(end.transpose())).join(begin));
+        final Formula f23 = n.in(st.join(begEnd));
+        final Formula f24 = n.in(end_loop);
+        final Formula f25 = f24.implies(f22.and(f23));
+        final Formula f26 = f25.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
+        */
+        
+        
+       /*final Formula f22 = n.in(st.join(begEnd)); // an end node is any node that has an immediate pointer to a start node.
+        final Formula f23 = n.in(end_loop);  // and is reachable from said start node.
+        final Formula f24 = st.in(nextNodeN);
+        final Formula f25 = (f24.and(f22)).iff(f23);
+        final Formula f26 = f25.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
+        */
         
         
         
@@ -168,7 +186,8 @@ public class PathIF {
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36).and(f26);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36);
+		
 		//and f26
 //.and(f21).and(f27).and(f31);
 	}
@@ -260,7 +279,7 @@ public class PathIF {
 	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) {
 		try {
-			final PathIF model = new PathIF();							/* Path		Path */
+			final PathFinder model = new PathFinder();							/* Path		Path */
 			final Solver solver = new Solver();
 			final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
 			final Formula f = model.empty();

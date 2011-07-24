@@ -365,11 +365,11 @@ public class Graph {
 	 */
 	public static void main(String[] argc){
 		Graph test  = new Graph();
-		test.readFile("src/graphs/input.txt");
+		test.readFile("src/graphs/forloop.txt");
 		test.printMe();
-		test.readFile("src/graphs/input2.txt");
+		test.readFile("src/graphs/parallelloops.txt");
 		test.printMe();
-		test.readFile("src/graphs/input3.txt");
+		test.readFile("src/graphs/linearinput.txt");
 		test.printMe();
 		System.out.println("test complete");
 	}
