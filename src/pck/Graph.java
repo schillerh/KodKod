@@ -398,11 +398,11 @@ public class Graph {
 	
 	public void solveGraph(){
 		// if loops exist....
-		// remove loops from graph.... solve subgraphs.
+		// remove loops from graph.... solve subgraphs. <-- magic function.
 		
 		
 		this.solveAllSubgraphs();
-		// then solve this graph
+		// then solve this graph <using normal methods in the pathfinder.. simply solve graph, and convert solutions into the pathstring>
 		// then replace subgraph labels in path string with subgraph solutions.
 		// finally set path string in THIS graph to final solution.
 		
