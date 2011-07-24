@@ -297,7 +297,6 @@ public class LoopFinder {
 		b.boundExactly(next, Next);
 
 		final TupleSet Begins = f.noneOf(2);
-		System.out.println("SIZE  = " + jpx.getBegin().size());
 		for(Integer i = 0; i < jpx.getBegin().size(); i++){
 		Begins.add(f.tuple(jpx.getBegin().get(i).getX(), jpx.getBegin().get(i).getY()));
 		}
