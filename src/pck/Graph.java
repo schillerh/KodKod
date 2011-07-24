@@ -334,7 +334,7 @@ public class Graph {
 		System.out.println("EndNode: " + endPt.toString());
 		System.out.println("");
 		
-		System.out.println("Begin Pairs :");
+		System.out.println("Begin Pairs :" + begin.size());
 		for(int i = 0; i < begin.size(); i++){
 			System.out.println("( " + begin.get(i).getX() + ", " + begin.get(i).getY() + " )");
 		}
@@ -349,6 +349,7 @@ public class Graph {
 	
 	System.out.println("");
 	System.out.println("Proper Edges: ");
+	System.out.println("begins size  == " + begin.size());
 	for(int i = 0; i < begin.size(); i++){
 		System.out.println("( " + begin.get(i).getY() + " , " + end.get(i).getY() + " )");
 	}
@@ -365,12 +366,14 @@ public class Graph {
 	 */
 	public static void main(String[] argc){
 		Graph test  = new Graph();
+		Graph test2 = new Graph();
+		Graph test3 = new Graph();
 		test.readFile("src/graphs/forloop.txt");
 		test.printMe();
-		test.readFile("src/graphs/parallelloops.txt");
-		test.printMe();
-		test.readFile("src/graphs/linearinput.txt");
-		test.printMe();
+		test2.readFile("src/graphs/parallelloops.txt");
+		test2.printMe();
+		test3.readFile("src/graphs/linearinput.txt");
+		test3.printMe();
 		System.out.println("test complete");
 	}
 	
