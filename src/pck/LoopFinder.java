@@ -1,5 +1,8 @@
 package pck;
-
+/*
+ * 
+ * This is the loop finder.
+ */
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -10,7 +13,7 @@ import kodkod.instance.*;
 import kodkod.engine.*;
 import kodkod.engine.satlab.SATFactory;
 
-public class PathFinder {
+public class LoopFinder {
 
 	private final Relation Node, Start, Finish;
 
@@ -18,7 +21,7 @@ public class PathFinder {
 
 	private final Relation Visit, ref, next, start_loop, end_loop, loop_set;
 
-	public PathFinder() {														/* Path */
+	public LoopFinder() {														/* Path */
 		Node = Relation.unary("Node");
 		Edge = Relation.unary("Edge");
 		Visit = Relation.unary("Visit");
@@ -279,7 +282,7 @@ public class PathFinder {
 	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) {
 		try {
-			final PathFinder model = new PathFinder();							/* Path		Path */
+			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
 			final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
 			final Formula f = model.empty();
