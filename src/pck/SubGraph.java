@@ -17,11 +17,14 @@ public class SubGraph extends Graph{
 
 
 	public void solveSubgraph(){
-		//remove loop connectors, then solve this graph as if it was a normal graph. =]
+		//remove loop connectors!!!!!!
+		//<<remove the nodes that connect the start node, and the end_loop node. (end loop is a construct that only exists within a subgraph).
 		
+		
+		
+		
+		// then just solve like normal.
 		this.solveGraph();
-
-
 
 	}
 
