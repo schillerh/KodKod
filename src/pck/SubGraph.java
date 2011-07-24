@@ -15,9 +15,12 @@ public class SubGraph extends Graph{
 
 
 
-
+/**
+ * this method removes the nodes connecting the start_loop(aka start) and the end_loop node(NOT THE FINISH NODE) then solves the graph like normal.
+ * this allows this normal solve method to check for further inner loops, and then solve them.
+ */
 	public void solveSubgraph(){
-		//remove loop connectors!!!!!!
+		// TODO remove loop connectors!!!!!!
 		//<<remove the nodes that connect the start node, and the end_loop node. (end loop is a construct that only exists within a subgraph).
 		
 		

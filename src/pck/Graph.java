@@ -388,24 +388,41 @@ public class Graph {
 
 	}
 
-	
-	public void solveAllSubgraphs(){
+	/**
+	 * This private method solves all the subgraphs in this graph, by calling solveSubGraph on all of them.
+	 */
+	private void solveAllSubgraphs(){
 		for(int i = 0; i < subs.size(); i++){
 			subs.get(i).solveSubgraph();
 		}
 	}
 	
-	
+	/**
+	 * this method solves the current graph, and sets it's path string.
+	 */
 	public void solveGraph(){
-		// if loops exist....
-		// remove loops from graph.... solve subgraphs. <-- magic function.
+		// TODO if loops exist....
+		// TODO remove loops from graph.... and create subgraphs. then solve subgraphs. <-- magic function.
 		
+		this.createSubGraphs();
 		
 		this.solveAllSubgraphs();
-		// then solve this graph <using normal methods in the pathfinder.. simply solve graph, and convert solutions into the pathstring>
-		// then replace subgraph labels in path string with subgraph solutions.
+		// TODO then solve this graph <using normal methods in the pathfinder.. simply solve graph, and convert solutions into the pathstring>
+		// TODO then replace subgraph labels in path string with subgraph solutions. <this one should be pretty easy>
 		// finally set path string in THIS graph to final solution.
 		
+		
+	}
+/**
+ * this private method finds all loops contained within the current graph, and eliminates them, generating a set of subgraphs now contained within this graph.
+ * These subgraphs can then be solved by the solveAllSubGraphs() method.
+ */
+	private void createSubGraphs() {
+		// TODO this function removes all the loops from a graph and replaces them with singular nodes. named LOOP[INDEX] eg LOOP1
+		// TODO all edges that point to the start node now point to the LOOP node.
+		// TODO all edges that begin on the node AFTER the end node now begin with the LOOP node.
+		
+		//since these are saved locally it's okay to re-use the indexes for each graph and it's respective subgraphs.
 		
 	}
 
