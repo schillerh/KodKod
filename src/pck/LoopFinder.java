@@ -161,6 +161,7 @@ public class LoopFinder {
         final Formula f35 = f34.iff(f33.and(f32).and(f31));
         final Formula f36 = f35.forAll(n.oneOf(Node).and(x.oneOf(Node)));
         
+        /*
         final Formula f37 = x.in(  ( (n.join(end.transpose())).join(begin) ));
         final Formula f38 = x.in(n.join(begEnd));
         final Formula f42 = n.in(start_loop);
@@ -168,6 +169,31 @@ public class LoopFinder {
         final Formula f43 = f37.and(f38).and(f42);
         final Formula f40 = f39.iff(f43);
         final Formula f41 = f40.forAll(x.oneOf(Node).and(n.oneOf(Node)));
+        */
+        
+    //   final Formula f37 =  (n.in( (st.join(end.transpose() )).join(begin))).not();  // n is not a node that came before st.
+     
+       final Formula f38 = st.in(nextNodeN);
+       final Formula f40 = n.in(end_loop);
+       final Formula f39 = st.in(start_loop);
+       final Formula f41 = f40.iff(f38.and(f39));
+       final Formula f42 = f41.forAll(n.oneOf(Node).and(st.oneOf(Node)));
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
  
         
@@ -197,7 +223,7 @@ public class LoopFinder {
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36).and(f41);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36).and(f42);
 		
 		//and f26
 //.and(f21).and(f27).and(f31);
