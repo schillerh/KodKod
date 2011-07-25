@@ -1,7 +1,9 @@
 package pck;
 /*
  * 
- * This is the loop finder.
+ * This is the path finder, it should only ever be run on the main graph. After the main graph has been processed it will contain no loops, therefore the maximum length of the path
+ * is equal to the number of edges in the graph.
+ * TODO strip out the loop locating functionality.
  */
 import java.util.ArrayList;
 import java.util.List;

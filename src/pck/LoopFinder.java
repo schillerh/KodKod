@@ -1,7 +1,9 @@
 package pck;
 /*
  * 
- * This is the loop finder.
+ * This is the loop finder. it is supposed to find start and end-loop points in a graph.
+ * TODO remove pathing component from this set of rules.
+ * 
  */
 import java.util.ArrayList;
 import java.util.List;

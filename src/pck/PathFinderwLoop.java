@@ -1,7 +1,12 @@
 	package pck;
 	/*
 	 * 
-	 * This is the loop finder.
+	 * This is the path with loop finder... its purpose is to iteratively find a path by iteratively increasing the 
+	 * bounds until a path that re-reaches the start-node is found. This is only meant to be run on subgraphs(loops)
+	 * whos loops have already been consolidated into further subgraphs. ie. there should only be one loop.
+	 * TODO add iterative functionality.
+	 * TODO strip out the loop locating functionality, we will already know where it is at this point, it could even be loaded from graph class instead of determined. No reason to do extra work.
+	 * 
 	 */
 	import java.util.ArrayList;
 	import java.util.List;
