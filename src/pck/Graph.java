@@ -424,15 +424,6 @@ public class Graph {
 		//uses path string from the subgraphs to generate the pathstring, so make sure you create and solve them first. 
 		// this is intended to only be run on graphs that DO NOT CONTAIN LOOPS. Otherwise, it will take a long time to complete.
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 	}
 
 
