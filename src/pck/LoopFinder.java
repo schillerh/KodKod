@@ -95,16 +95,28 @@ public class LoopFinder {
 		// start loop nodes are nodes such that their transitive closure contains the node itself, but the node that comes before
 		// is not contained within the transitive closure.
 		final Expression reachableFromN = (n.join(((begin.transpose()).join(end)).closure()));
+		final Expression backreachableFromN = (n.join(((end.transpose()).join(begin)).closure()));
 		final Expression nodeb4N       = (n.join(end.transpose() )).join(begin);
+		final Expression begEnd = ((begin.transpose()).join(end)).closure(); // nodes reachable from node in question.
+        final Expression nextNodeN = (((n.join(begin.transpose())).join(end)));
+        final Expression Endbeg = ((end.transpose()).join(begin)).closure(); // nodes reachable from node in question going backwards.
+		final Expression NodeAfter = (n.join(begin.transpose() )).join(end);
+		
+		
+		
 		final Formula f17 = n.in(reachableFromN);
 		final Formula f18 = (nodeb4N.in(reachableFromN)).not();
 		final Formula f19 = n.in(start_loop);
 		final Formula f20 = (f18.and(f17)  ).iff(f19);
 		final Formula f21 = f20.forAll((n.oneOf(Node)));
+
 		
-		final Expression begEnd = ((begin.transpose()).join(end)).closure(); // nodes reachable from node in question.
-        final Expression nextNodeN = (((n.join(begin.transpose())).join(end)));
-        
+		final Formula f100 = n.in(reachableFromN);
+		final Formula f101 = (NodeAfter.in(backreachableFromN)).not();
+		final Formula f105 = n.in(start_loop).not();
+		final Formula f102 = n.in(end_loop);
+		final Formula f103 = (f100.and(f101).and(f105)).iff(f102);
+        final Formula f104 = f103.forAll((n.oneOf(Node)));
         
         
         // SCHILLER's END SOLUTION
@@ -221,19 +233,19 @@ public class LoopFinder {
 		final Formula f31 = f30.forAll(n.oneOf(Node).and(st.oneOf(start_loop)).and(en.oneOf(end_loop)));
 
 		*/
-        Formula f100 = x.in(nextNodeN);
+      /*  Formula f100 = x.in(nextNodeN);
         Formula f101 = st.in(nextNodeN);
         Formula f102 = st.in(n.join(begEnd));
         Formula f103 = (st.in(x.join(begEnd))).not();  // start node is not reachable from node after end node.
         Formula f104 = n.in(end_loop);
         Formula f105 = f104.implies(f103.and(f102).and(f101).and(f100));
         Formula f106 = f105.forAll(n.oneOf(Node).and(st.oneOf(start_loop).and(x.oneOf(Node))));
-	
+	*/
 		
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36).and(f106);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36).and(f104);
 		
 		//and f26
 //.and(f21).and(f27).and(f31);
@@ -328,7 +340,7 @@ public class LoopFinder {
 		try {
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
+			final Bounds b = model.buildGraph("src/graphs/forloop.txt");
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);

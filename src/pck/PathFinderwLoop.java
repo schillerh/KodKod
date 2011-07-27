@@ -246,7 +246,7 @@
 			return declarations().and(facts());
 		}
 	/* this is the old bounds function that was provided. */ 
-		public final Bounds buildGraph(String filename) {
+		public final Bounds buildloopGraph(String filename) {
 			
 			Graph jpx = new Graph();
 			jpx.readFile(filename);
@@ -329,9 +329,9 @@
 		@SuppressWarnings("rawtypes")
 		public static void main(String[] args) {
 			try {
-				final LoopFinder model = new LoopFinder();							/* Path		Path */
+				final PathFinderwLoop model = new PathFinderwLoop();							/* Path		Path */
 				final Solver solver = new Solver();
-				final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
+				final Bounds b = model.buildloopGraph("src/graphs/parallelloops.txt");
 				final Formula f = model.empty();
 				System.out.println(f);
 				solver.options().setSolver(SATFactory.DefaultSAT4J);
