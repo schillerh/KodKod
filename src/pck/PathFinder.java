@@ -19,7 +19,7 @@ public class PathFinder {
 
 	private final Relation Node, Start, Finish;
 
-	private final Relation Edge, begin, end, corresp;
+	private final Relation Edge, begin, end;
 
 	private final Relation Visit, ref, next;
 
@@ -33,7 +33,7 @@ public class PathFinder {
 		end = Relation.binary("end");
 		ref = Relation.binary("ref");
 		next = Relation.binary("next");
-		corresp = Relation.binary("corresp");
+	
 
 		Start = Relation.unary("Start");
 		Finish = Relation.unary("Finish");
