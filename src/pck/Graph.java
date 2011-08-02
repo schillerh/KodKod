@@ -259,6 +259,10 @@ public class Graph {
 	}
 
 
+	
+	public Integer getNumNodes(){
+		return Nodes.size();
+	}
 
 
 	/**

@@ -97,10 +97,9 @@ public class PathFinder {
 		return declarations().and(facts());
 	}
 /* this is the old bounds function that was provided. */ 
-	public final Bounds buildpathGraph(String filename) {
+	public final Bounds buildpathGraph(Graph jpx, Integer bound) {
 		
-		Graph jpx = new Graph();
-		jpx.readFile(filename);
+	
 
 		Integer scope = jpx.getnumVisits();
 		assert scope > 0;
@@ -134,7 +133,7 @@ public class PathFinder {
 		/* Java will not instantiate new Nodes. */
 		b.bound(Node, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(Edge, f.range(f.tuple(jpx.getEdge().get(0)), f.tuple( jpx.getEdge().get(jpx.getEdge().size()-1))));				/* Java will not instantiate new Edges. */
-		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + String.valueOf( Integer.valueOf( jpx.getnumVisits()) - 1 ))));
+		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + String.valueOf( bound - 1))));
 			
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
@@ -142,7 +141,7 @@ public class PathFinder {
 		
 		
 		final TupleSet Next = f.noneOf(2);
-		for(Integer i = 0; i < scope - 1; i++){
+		for(Integer i = 0; i < bound - 1; i++){
 			Integer plusone = i + 1;
 			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
 		}
@@ -174,25 +173,37 @@ public class PathFinder {
 
 	
 	@SuppressWarnings("rawtypes")
-	public static void main(String[] args) {
+	public static void find_path(Graph jpx) {
 		try {
 			final PathFinder model = new PathFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildpathGraph("src/graphs/forloop.txt");
+			
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
 			System.out.println(System.currentTimeMillis());
+			
+			assert jpx.getNumNodes() > 0;
+			for(int i = 1; i <= jpx.getNumNodes() - 1; i ++){
+				System.out.println("Finding paths for Bounds == " + i);
+			final Bounds b = model.buildpathGraph(jpx, i);
 			Iterator iterSols = solver.solveAll(f , b);
-			System.out.println(System.currentTimeMillis());
-			while(iterSols.hasNext()) {
-				final Solution s = (Solution) iterSols.next();
-				if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
-					System.out.println(s);	
+				while(iterSols.hasNext()){
+					Solution s = (Solution)iterSols.next();
+					if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
+					System.out.println(s);
+					}
 				}
+				
 			}
 
 
 		}	catch (NumberFormatException nfe) {}
+	}
+	
+	public static void main(String[] argc){
+		Graph jpx = new Graph();
+		jpx.readFile("src/graphs/linearinput.txt");
+		PathFinder.find_path(jpx);
 	}
 }
