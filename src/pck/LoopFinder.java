@@ -248,10 +248,9 @@ public class LoopFinder {
 		return declarations().and(facts());
 	}
 /* this is the old bounds function that was provided. */ 
-	public final Bounds buildGraph(String filename) {
+	public final Bounds buildGraph(Graph jpx) {
 		
-		Graph jpx = new Graph();
-		jpx.readFile(filename);
+
 
 		Integer scope = jpx.getnumVisits();
 		assert scope > 0;
@@ -315,21 +314,28 @@ public class LoopFinder {
 
 	
 	@SuppressWarnings("rawtypes")
-	public static void find_loops(String inputfilename){
-		
+	public static void find_loops(Graph jpx){
+		try{
+			FileWriter outFile = new FileWriter("./temp");
+			PrintWriter out = new PrintWriter(outFile);
+			
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph(inputfilename);
+			final Bounds b = model.buildGraph(jpx);
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
 			System.out.println(System.currentTimeMillis());
 			Iterator iterSols = solver.solveAll(f , b);
 			System.out.println(System.currentTimeMillis());
+			while(iterSols.hasNext()) {
+				final Solution s = (Solution) iterSols.next();
+				if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
+					out.print(s);
+				}
+			}
 			
-			try{
-			FileWriter outFile = new FileWriter("./temp");
-			PrintWriter out = new PrintWriter(outFile);
+
 			
 			
 			
@@ -347,7 +353,9 @@ public class LoopFinder {
 	
 	
 	public static void main(String[] argc){
-		find_loops("src/graphs/forloop.txt");
+		Graph jpx = new Graph();
+		jpx.readFile("src/graphs/forloop.txt");
+		LoopFinder.find_loops(jpx);
 	}
 	
 
