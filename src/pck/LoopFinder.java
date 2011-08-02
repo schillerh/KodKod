@@ -21,7 +21,7 @@ public class LoopFinder {
 
 	private final Relation Edge, begin, end, corresp;
 
-	private final Relation start_loop, end_loop, loop_set;
+	private final Relation start_loop, end_loop, loop_set, node_after;
 
 	public LoopFinder() {														/* Path */
 		Node = Relation.unary("Node");
@@ -29,6 +29,7 @@ public class LoopFinder {
 		start_loop = Relation.unary("start_loop");
 		end_loop = Relation.unary("end_loop");
 		loop_set = Relation.unary("loop_set");
+		node_after = Relation.unary("node_after");
 
 
 		begin = Relation.binary("begin");
@@ -154,6 +155,17 @@ public class LoopFinder {
         final Formula f36 = f35.forAll(n.oneOf(Node).and(x.oneOf(Node)));
         
         /*
+        final Formula f37 = n.in(end_loop);
+        final Formula f38 = x.in(NodeAfter);
+        final Formula f39 = x.in(node_after);
+        final Formula f40 = (f37.and(f38)).implies(f39);
+        final Formula f41 = f40.forAll(x.oneOf(Node).and(n.oneOf(Node)));
+        */
+        
+        
+        
+        
+        /*
         final Formula f37 = x.in(  ( (n.join(end.transpose())).join(begin) ));
         final Formula f38 = x.in(n.join(begEnd));
         final Formula f42 = n.in(start_loop);
@@ -268,7 +280,7 @@ public class LoopFinder {
 		b.bound(start_loop, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(end_loop, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(loop_set, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
-	
+		b.bound(node_after, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		
 		b.bound(corresp, b.upperBound(start_loop).product(b.upperBound(end_loop)));
 		
@@ -304,7 +316,7 @@ public class LoopFinder {
 		try {
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph("src/graphs/linearinput.txt");
+			final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
