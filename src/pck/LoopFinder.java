@@ -340,7 +340,7 @@ public class LoopFinder {
 		try {
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph("src/graphs/forloop.txt");
+			final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
