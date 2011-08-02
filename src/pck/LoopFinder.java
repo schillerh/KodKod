@@ -21,12 +21,11 @@ public class LoopFinder {
 
 	private final Relation Edge, begin, end, corresp;
 
-	private final Relation Visit, ref, next, start_loop, end_loop, loop_set;
+	private final Relation start_loop, end_loop, loop_set;
 
 	public LoopFinder() {														/* Path */
 		Node = Relation.unary("Node");
 		Edge = Relation.unary("Edge");
-		Visit = Relation.unary("Visit");
 		start_loop = Relation.unary("start_loop");
 		end_loop = Relation.unary("end_loop");
 		loop_set = Relation.unary("loop_set");
@@ -34,8 +33,6 @@ public class LoopFinder {
 
 		begin = Relation.binary("begin");
 		end = Relation.binary("end");
-		ref = Relation.binary("ref");
-		next = Relation.binary("next");
 		corresp = Relation.binary("corresp");
 
 		Start = Relation.unary("Start");
@@ -45,10 +42,8 @@ public class LoopFinder {
 	public Formula declarations() {
 		final Formula f0 = begin.function(Edge, Node);
 		final Formula f1 = end.function(Edge, Node);
-		final Formula f2 = ref.function(Visit, Edge);	/* Node */
-		final Formula f3 = next.partialFunction(Visit, Visit);
 		final Formula f4 = corresp.function(start_loop, end_loop);
-		return f0.and(f1).and(f2).and(f3);
+		return f0.and(f1).and(f4);
 	}
 
 	public final Formula facts() {
@@ -65,30 +60,13 @@ public class LoopFinder {
 		/*	final Variable e = Variable.unary("e");	*/
 
 		/* CONFORMITY: The structure of the path conforms to the structure of the graph. */
-		final Formula f0 = v.join(next).eq(w);
-		final Formula f1 = v.join(ref).eq(e);								/* n */
-		final Formula f2 = w.join(ref).eq(d);								/* m */
 		final Formula f3 = d.join(begin).eq(e.join(end));					/* e	n */
 		/*	final Formula f4 = e.join(end).eq(m);	*/
-		final Formula f4 = f0.and(f1).and(f2).implies(f3);
-		final Formula f5 = f4.forAll(v.oneOf(Visit).and(w.oneOf(Visit)).and(e.oneOf(Edge)).and(d.oneOf(Edge)));
+		final Formula f5 = f3.forSome(e.oneOf(Edge).and(d.oneOf(Edge)));
 
-		/* ACYCLICITY: The path is an acyclic sequence of Visits. */
-		final Formula f6 = v.in(w.join(next.reflexiveClosure()));
-		final Formula f7 = w.in(v.join(next.closure())).not();
-		final Formula f8 = f6.iff(f7).forAll(v.oneOf(Visit).and(w.oneOf(Visit)));
 
 		/* There is a Visit before all other Visits, which references an Edge that Begins at the Start Node. */
-		final Formula f9 = v.join(ref.join(begin)).eq(Start);
-		final Formula f10 = w.in(v.join(next.reflexiveClosure()));
-		final Formula f11 = f9.and(f10);
-		final Formula f12 = f11.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
-
 		/* There is a Visit after all other Visits, which references an Edge that Ends at the Finish Node. */
-		final Formula f13 = v.join(ref.join(end)).eq(Finish);
-		final Formula f14 = v.in(w.join(next.reflexiveClosure()));
-		final Formula f15 = f13.and(f14);
-		final Formula f16 = f15.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
 		// rechablefromN = set of nodes reachable from N.
 		// nodeb4N = going from beginning to end... set ofnodes that come before the node N
 		
@@ -245,7 +223,7 @@ public class LoopFinder {
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36).and(f104);
+		return f5.and(f21).and(f30).and(f36).and(f104);
 		
 		//and f26
 //.and(f21).and(f27).and(f31);
@@ -274,11 +252,6 @@ public class LoopFinder {
 		
 
 
-		Integer temp = jpx.getnumVisits();
-		System.out.println("maxvis = "+ temp);
-		for (int i = 0; i < temp; i++){
-			atoms.add("Visit" + i);
-		}
 		
 		
 		final Universe u = new Universe(atoms);
@@ -292,23 +265,14 @@ public class LoopFinder {
 		/* Java will not instantiate new Nodes. */
 		b.bound(Node, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(Edge, f.range(f.tuple(jpx.getEdge().get(0)), f.tuple( jpx.getEdge().get(jpx.getEdge().size()-1))));				/* Java will not instantiate new Edges. */
-		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + String.valueOf( Integer.valueOf( jpx.getnumVisits()) - 1 ))));
 		b.bound(start_loop, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(end_loop, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(loop_set, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
-		
-		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
-		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
+	
 		
 		b.bound(corresp, b.upperBound(start_loop).product(b.upperBound(end_loop)));
 		
 		
-		final TupleSet Next = f.noneOf(2);
-		for(Integer i = 0; i < scope - 1; i++){
-			Integer plusone = i + 1;
-			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
-		}
-		b.boundExactly(next, Next);
 
 		final TupleSet Begins = f.noneOf(2);
 		for(Integer i = 0; i < jpx.getBegin().size(); i++){
@@ -340,7 +304,7 @@ public class LoopFinder {
 		try {
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
+			final Bounds b = model.buildGraph("src/graphs/linearinput.txt");
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
@@ -351,6 +315,9 @@ public class LoopFinder {
 				final Solution s = (Solution) iterSols.next();
 				if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
 					System.out.println(s);	
+				}
+				else{
+					System.out.println(s.proof());
 				}
 			}
 
