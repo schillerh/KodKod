@@ -5,6 +5,9 @@ package pck;
  * is equal to the number of edges in the graph.
  * TODO strip out the loop locating functionality.
  */
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -116,7 +119,6 @@ public class PathFinder {
 
 
 		Integer temp = jpx.getnumVisits();
-		System.out.println("maxvis = "+ temp);
 		for (int i = 0; i < temp; i++){
 			atoms.add("Visit" + i);
 		}
@@ -175,30 +177,37 @@ public class PathFinder {
 	@SuppressWarnings("rawtypes")
 	public static void find_path(Graph jpx) {
 		try {
+			
+			FileWriter outFile = new FileWriter("./temp");
+			PrintWriter out = new PrintWriter(outFile);
+			
 			final PathFinder model = new PathFinder();							/* Path		Path */
 			final Solver solver = new Solver();
 			
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
-			System.out.println(System.currentTimeMillis());
+		
 			
 			assert jpx.getNumNodes() > 0;
 			for(int i = 1; i <= jpx.getNumNodes() - 1; i ++){
-				System.out.println("Finding paths for Bounds == " + i);
+				out.println("Finding paths for Bounds == " + i);
 			final Bounds b = model.buildpathGraph(jpx, i);
 			Iterator iterSols = solver.solveAll(f , b);
 				while(iterSols.hasNext()){
 					Solution s = (Solution)iterSols.next();
 					if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
 					System.out.println(s);
+					out.print(s);
 					}
 				}
 				
 			}
-
+			outFile.close();
+			out.close();
 
 		}	catch (NumberFormatException nfe) {}
+		    catch (IOException e) {}
 	}
 	
 	public static void main(String[] argc){
