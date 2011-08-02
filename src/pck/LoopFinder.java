@@ -5,6 +5,9 @@ package pck;
  * TODO remove pathing component from this set of rules.
  * 
  */
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -312,27 +315,42 @@ public class LoopFinder {
 
 	
 	@SuppressWarnings("rawtypes")
-	public static void main(String[] args) {
-		try {
+	public static void find_loops(String inputfilename){
+		
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
+			final Bounds b = model.buildGraph(inputfilename);
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
 			System.out.println(System.currentTimeMillis());
 			Iterator iterSols = solver.solveAll(f , b);
 			System.out.println(System.currentTimeMillis());
-			while(iterSols.hasNext()) {
-				final Solution s = (Solution) iterSols.next();
-				if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
-					System.out.println(s);	
-				}
-				else{
-					System.out.println(s.proof());
-				}
+			
+			try{
+			FileWriter outFile = new FileWriter("./temp");
+			PrintWriter out = new PrintWriter(outFile);
+			
+			
+			
+			//output goes here.
+			//out.print(" ///// ");			
+			
+			outFile.close();
+			out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
-		}	catch (NumberFormatException nfe) {}
+			
 	}
+	
+	
+	public static void main(String[] argc){
+		find_loops("src/graphs/forloop.txt");
+	}
+	
+
 }
+
+		
