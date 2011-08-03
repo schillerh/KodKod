@@ -199,6 +199,68 @@ public class PathFinder {
 					if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
 					System.out.println(s);
 					out.print(s);
+					String[] temp  = s.toString().split("ref=");
+					System.out.println("");
+					System.out.println("");
+					temp = temp[1].split(", next=");
+					temp = temp[0].split(", ");
+					ArrayList<String> ee = new ArrayList<String>();
+					for(int x = 0; x < temp.length; x++)
+					{
+						if(x % 2 == 1){
+							ee.add(temp[x].split("]")[0].trim());
+						}
+					}
+					
+					
+					
+					// at this point ee contains a list of the edges traversed in a path. we want to convert this to nodes.
+					
+					temp = s.toString().split("end=");
+					temp = temp[1].split(", Start=");
+					temp = temp[0].split(", ");
+					ArrayList<String> en = new ArrayList<String>();
+					String temp2 = new String();
+					
+					for(int x = 0; x< temp.length; x++){
+						if(x == 0){
+							en.add(temp[0].substring(2, temp[0].length()).trim());
+						}
+						else if(x == temp.length - 1 ){
+							en.add(temp[temp.length - 1].substring(0, temp[temp.length - 1].length() - 2).trim());
+						}
+						
+						else if(x % 2 == 1){
+							en.add(temp[x].substring(0, temp[x].length() - 1).trim());
+							
+						}
+						else{
+							en.add(temp[x].substring(1, temp[x].length()).trim());
+						}
+						
+					}
+
+					//finally we solve the bloody path.
+					StringBuffer pathtemp = new StringBuffer();
+					
+					pathtemp.append("(" + jpx.getStartPt() + ",");
+					for(int x = 0; x < ee.size(); x++){
+					Integer index = en.indexOf(ee.get(x)) + 1;
+					pathtemp.append( en.get(index));
+						if(x != ee.size() - 1){
+							pathtemp.append(",");
+						}
+						else{
+							pathtemp.append(")");
+						}
+					
+					}
+					
+					
+					
+					
+					String fin = pathtemp.toString();
+					System.out.println("path == " + fin);
 					}
 				}
 				
