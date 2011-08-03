@@ -427,7 +427,9 @@ public class Graph {
 		//TODO this runs the path solver on the current graph, does not change anything. simply runs it, interprets the output, and sets the path string.
 		//uses path string from the subgraphs to generate the pathstring, so make sure you create and solve them first. 
 		// this is intended to only be run on graphs that DO NOT CONTAIN LOOPS. Otherwise, it will take a long time to complete.
-
+		this.setPath(PathFinder.find_path(this));
+		System.out.println("path found == " + this.getPath());
+		
 	}
 
 
@@ -458,12 +460,12 @@ public class Graph {
 		Graph test  = new Graph();
 		Graph test2 = new Graph();
 		Graph test3 = new Graph();
-		test.readFile("src/graphs/forloop.txt");
-		test.printMe();
+		//test.readFile("src/graphs/forloop.txt");
+		//test.printMe();
 		test2.readFile("src/graphs/parallelloops.txt");
-		test2.printMe();
+		test2.solvePath();
 		test3.readFile("src/graphs/linearinput.txt");
-		test3.printMe();
+		test3.solvePath();
 		System.out.println("test complete");
 	}
 

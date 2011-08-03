@@ -325,7 +325,7 @@ public class PathFinderwLoop {
 
 	public static void main(String[] argc){
 		Graph jpx = new Graph();
-		jpx.readFile("src/graphs/forloop.txt");
+		jpx.readFile("src/graphs/linearinput.txt");
 		PathFinderwLoop.find_loop_path(jpx);
 
 

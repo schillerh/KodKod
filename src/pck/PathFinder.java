@@ -25,6 +25,8 @@ public class PathFinder {
 	private final Relation Edge, begin, end;
 
 	private final Relation Visit, ref, next;
+	
+	private static String fin;
 
 	public PathFinder() {														/* Path */
 		Node = Relation.unary("Node");
@@ -175,7 +177,7 @@ public class PathFinder {
 
 
 	@SuppressWarnings("rawtypes")
-	public static void find_path(Graph jpx) {
+	public static String find_path(Graph jpx) {
 		try {
 
 			FileWriter outFile = new FileWriter("./temp");
@@ -259,22 +261,26 @@ public class PathFinder {
 
 
 
-						String fin = pathtemp.toString();
-						System.out.println("path == " + fin);
+						fin = pathtemp.toString();
+						System.out.println(fin);
+						
 					}
 				}
 
 			}
 			outFile.close();
 			out.close();
+			return fin;
 
-		}	catch (NumberFormatException nfe) {}
-		catch (IOException e) {}
+		}	catch (NumberFormatException nfe) {System.out.print("EEEK1!");}
+		catch (IOException e) {System.out.println("EEEK2")	;}
+		return null;
 	}
 
 	public static void main(String[] argc){
 		Graph jpx = new Graph();
 		jpx.readFile("src/graphs/linearinput.txt");
+		System.out.println( "num = " + jpx.getnumVisits());
 		PathFinder.find_path(jpx);
 	}
 }
