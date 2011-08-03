@@ -259,7 +259,7 @@ public class Graph {
 	}
 
 
-	
+
 	public Integer getNumNodes(){
 		return Nodes.size();
 	}
@@ -427,7 +427,7 @@ public class Graph {
 		//TODO this runs the path solver on the current graph, does not change anything. simply runs it, interprets the output, and sets the path string.
 		//uses path string from the subgraphs to generate the pathstring, so make sure you create and solve them first. 
 		// this is intended to only be run on graphs that DO NOT CONTAIN LOOPS. Otherwise, it will take a long time to complete.
-		
+
 	}
 
 

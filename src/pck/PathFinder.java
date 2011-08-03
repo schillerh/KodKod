@@ -36,7 +36,7 @@ public class PathFinder {
 		end = Relation.binary("end");
 		ref = Relation.binary("ref");
 		next = Relation.binary("next");
-	
+
 
 		Start = Relation.unary("Start");
 		Finish = Relation.unary("Finish");
@@ -60,7 +60,7 @@ public class PathFinder {
 		final Variable en = Variable.unary("en");
 		final Variable x = Variable.unary("x");
 		final Variable x2 = Variable.unary("x2");
-	//	final Variable end = Variable.unary("end");
+		//	final Variable end = Variable.unary("end");
 		/*	final Variable e = Variable.unary("e");	*/
 
 		/* CONFORMITY: The structure of the path conforms to the structure of the graph. */
@@ -91,57 +91,57 @@ public class PathFinder {
 
 
 		return f5.and(f8).and(f12).and(f16);
-		
+
 		//and f26
-//.and(f21).and(f27).and(f31);
+		//.and(f21).and(f27).and(f31);
 	}
 
 	public final Formula empty() {
 		return declarations().and(facts());
 	}
-/* this is the old bounds function that was provided. */ 
+	/* this is the old bounds function that was provided. */ 
 	public final Bounds buildpathGraph(Graph jpx, Integer bound) {
-		
-	
+
+
 
 		Integer scope = jpx.getnumVisits();
 		assert scope > 0;
-		
+
 		final List<String> atoms = new ArrayList<String>(40);
 		atoms.addAll(jpx.getNodes());
 		Integer numNodes = jpx.getNodes().size();
-		
+
 		atoms.addAll(jpx.getEdge());
-		
 
 
-		
+
+
 
 
 		Integer temp = jpx.getnumVisits();
 		for (int i = 0; i < temp; i++){
 			atoms.add("Visit" + i);
 		}
-		
-		
+
+
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
 		final int max = scope - 1;
 
-		
-		
-		
+
+
+
 		/* Java will not instantiate new Nodes. */
 		b.bound(Node, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(Edge, f.range(f.tuple(jpx.getEdge().get(0)), f.tuple( jpx.getEdge().get(jpx.getEdge().size()-1))));				/* Java will not instantiate new Edges. */
 		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + String.valueOf( bound - 1))));
-			
+
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
-		
-		
-		
+
+
+
 		final TupleSet Next = f.noneOf(2);
 		for(Integer i = 0; i < bound - 1; i++){
 			Integer plusone = i + 1;
@@ -151,14 +151,14 @@ public class PathFinder {
 
 		final TupleSet Begins = f.noneOf(2);
 		for(Integer i = 0; i < jpx.getBegin().size(); i++){
-		Begins.add(f.tuple(jpx.getBegin().get(i).getX(), jpx.getBegin().get(i).getY()));
+			Begins.add(f.tuple(jpx.getBegin().get(i).getX(), jpx.getBegin().get(i).getY()));
 		}
 		b.boundExactly(begin , Begins);
 
-		
+
 		final TupleSet Ends = f.noneOf(2);
 		for(Integer i = 0; i < jpx.getEnd().size(); i++){
-		Ends.add(f.tuple(jpx.getEnd().get(i).getX(), jpx.getEnd().get(i).getY()));
+			Ends.add(f.tuple(jpx.getEnd().get(i).getX(), jpx.getEnd().get(i).getY()));
 		}
 		b.boundExactly(end , Ends);
 
@@ -173,105 +173,105 @@ public class PathFinder {
 		return b;
 	}
 
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void find_path(Graph jpx) {
 		try {
-			
+
 			FileWriter outFile = new FileWriter("./temp");
 			PrintWriter out = new PrintWriter(outFile);
-			
+
 			final PathFinder model = new PathFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			
+
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
-		
-			
+
+
 			assert jpx.getNumNodes() > 0;
 			for(int i = 1; i <= jpx.getNumNodes() - 1; i ++){
 				out.println("Finding paths for Bounds == " + i);
-			final Bounds b = model.buildpathGraph(jpx, i);
-			Iterator iterSols = solver.solveAll(f , b);
+				final Bounds b = model.buildpathGraph(jpx, i);
+				Iterator iterSols = solver.solveAll(f , b);
 				while(iterSols.hasNext()){
 					Solution s = (Solution)iterSols.next();
 					if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
-					System.out.println(s);
-					out.print(s);
-					String[] temp  = s.toString().split("ref=");
-					System.out.println("");
-					System.out.println("");
-					temp = temp[1].split(", next=");
-					temp = temp[0].split(", ");
-					ArrayList<String> ee = new ArrayList<String>();
-					for(int x = 0; x < temp.length; x++)
-					{
-						if(x % 2 == 1){
-							ee.add(temp[x].split("]")[0].trim());
+						System.out.println(s);
+						out.print(s);
+						String[] temp  = s.toString().split("ref=");
+						System.out.println("");
+						System.out.println("");
+						temp = temp[1].split(", next=");
+						temp = temp[0].split(", ");
+						ArrayList<String> ee = new ArrayList<String>();
+						for(int x = 0; x < temp.length; x++)
+						{
+							if(x % 2 == 1){
+								ee.add(temp[x].split("]")[0].trim());
+							}
 						}
-					}
-					
-					
-					
-					// at this point ee contains a list of the edges traversed in a path. we want to convert this to nodes.
-					
-					temp = s.toString().split("end=");
-					temp = temp[1].split(", Start=");
-					temp = temp[0].split(", ");
-					ArrayList<String> en = new ArrayList<String>();
-					String temp2 = new String();
-					
-					for(int x = 0; x< temp.length; x++){
-						if(x == 0){
-							en.add(temp[0].substring(2, temp[0].length()).trim());
-						}
-						else if(x == temp.length - 1 ){
-							en.add(temp[temp.length - 1].substring(0, temp[temp.length - 1].length() - 2).trim());
-						}
-						
-						else if(x % 2 == 1){
-							en.add(temp[x].substring(0, temp[x].length() - 1).trim());
-							
-						}
-						else{
-							en.add(temp[x].substring(1, temp[x].length()).trim());
-						}
-						
-					}
 
-					//finally we solve the bloody path.
-					StringBuffer pathtemp = new StringBuffer();
-					
-					pathtemp.append("(" + jpx.getStartPt() + ",");
-					for(int x = 0; x < ee.size(); x++){
-					Integer index = en.indexOf(ee.get(x)) + 1;
-					pathtemp.append( en.get(index));
-						if(x != ee.size() - 1){
-							pathtemp.append(",");
+
+
+						// at this point ee contains a list of the edges traversed in a path. we want to convert this to nodes.
+
+						temp = s.toString().split("end=");
+						temp = temp[1].split(", Start=");
+						temp = temp[0].split(", ");
+						ArrayList<String> en = new ArrayList<String>();
+						String temp2 = new String();
+
+						for(int x = 0; x< temp.length; x++){
+							if(x == 0){
+								en.add(temp[0].substring(2, temp[0].length()).trim());
+							}
+							else if(x == temp.length - 1 ){
+								en.add(temp[temp.length - 1].substring(0, temp[temp.length - 1].length() - 2).trim());
+							}
+
+							else if(x % 2 == 1){
+								en.add(temp[x].substring(0, temp[x].length() - 1).trim());
+
+							}
+							else{
+								en.add(temp[x].substring(1, temp[x].length()).trim());
+							}
+
 						}
-						else{
-							pathtemp.append(")");
+
+						//finally we solve the bloody path.
+						StringBuffer pathtemp = new StringBuffer();
+
+						pathtemp.append("(" + jpx.getStartPt() + ",");
+						for(int x = 0; x < ee.size(); x++){
+							Integer index = en.indexOf(ee.get(x)) + 1;
+							pathtemp.append( en.get(index));
+							if(x != ee.size() - 1){
+								pathtemp.append(",");
+							}
+							else{
+								pathtemp.append(")");
+							}
+
 						}
-					
-					}
-					
-					
-					
-					
-					String fin = pathtemp.toString();
-					System.out.println("path == " + fin);
+
+
+
+
+						String fin = pathtemp.toString();
+						System.out.println("path == " + fin);
 					}
 				}
-				
+
 			}
 			outFile.close();
 			out.close();
 
 		}	catch (NumberFormatException nfe) {}
-		    catch (IOException e) {}
+		catch (IOException e) {}
 	}
-	
+
 	public static void main(String[] argc){
 		Graph jpx = new Graph();
 		jpx.readFile("src/graphs/linearinput.txt");
