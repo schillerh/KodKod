@@ -279,7 +279,7 @@ public class PathFinder {
 
 	public static void main(String[] argc){
 		Graph jpx = new Graph();
-		jpx.readFile("src/graphs/linearinput.txt");
+		jpx.readFile("src/graphs/complexgraph.txt");
 		System.out.println( "num = " + jpx.getnumVisits());
 		PathFinder.find_path(jpx);
 	}

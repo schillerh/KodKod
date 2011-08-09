@@ -28,6 +28,7 @@ public class PathFinderwLoop {
 	private final Relation Edge, begin, end;
 
 	private final Relation Visit, ref, next;
+	private static StringBuffer pathtemp = new StringBuffer();
 	private static boolean found = false;
 
 	public PathFinderwLoop() {														/* Path */
@@ -275,7 +276,7 @@ public class PathFinderwLoop {
 						}
 
 						//finally we solve the bloody path.
-						StringBuffer pathtemp = new StringBuffer();
+						
 
 						pathtemp.append("(" + jpx.getStartPt() + ",");
 						for(int x = 0; x < ee.size(); x++){
@@ -293,13 +294,13 @@ public class PathFinderwLoop {
 
 
 
-						String fin = pathtemp.toString();
-						System.out.println("path == " + fin);
-						if(fin.contains(jpx.getStartPt())){
+						
+						
+					/*	if(fin.contains(jpx.getStartPt())){
 							found = true;
 
 						}
-
+*/
 
 
 
@@ -313,7 +314,8 @@ public class PathFinderwLoop {
 
 
 			}
-
+			String fin = pathtemp.toString();
+			System.out.println("path == " + fin);
 			out.close();
 			outFile.close();
 
@@ -325,7 +327,7 @@ public class PathFinderwLoop {
 
 	public static void main(String[] argc){
 		Graph jpx = new Graph();
-		jpx.readFile("src/graphs/linearinput.txt");
+		jpx.readFile("src/graphs/forloop.txt");
 		PathFinderwLoop.find_loop_path(jpx);
 
 
