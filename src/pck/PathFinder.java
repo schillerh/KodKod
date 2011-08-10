@@ -26,7 +26,7 @@ public class PathFinder {
 
 	private final Relation Visit, ref, next;
 	
-	private static String fin;
+	private static String fin = new String();
 
 	public PathFinder() {														/* Path */
 		Node = Relation.unary("Node");
@@ -260,9 +260,9 @@ public class PathFinder {
 
 
 
-
-						fin = pathtemp.toString();
-						System.out.println(fin);
+						if(!fin.contains(pathtemp.toString().trim()) &&  ee.size() != 0 ){
+						fin = fin.concat( pathtemp.toString() );
+						}
 						
 					}
 				}
@@ -270,6 +270,7 @@ public class PathFinder {
 			}
 			outFile.close();
 			out.close();
+			System.out.println(fin);
 			return fin;
 
 		}	catch (NumberFormatException nfe) {System.out.print("EEEK1!");}
