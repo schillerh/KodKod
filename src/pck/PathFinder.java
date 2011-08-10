@@ -120,7 +120,7 @@ public class PathFinder {
 
 
 
-		Integer temp = jpx.getnumVisits();
+		Integer temp = bound;
 		for (int i = 0; i < temp; i++){
 			atoms.add("Visit" + i);
 		}
@@ -180,8 +180,8 @@ public class PathFinder {
 	public static String find_path(Graph jpx) {
 		try {
 
-			FileWriter outFile = new FileWriter("./temp");
-			PrintWriter out = new PrintWriter(outFile);
+		//	FileWriter outFile = new FileWriter("./temp");
+		//	PrintWriter out = new PrintWriter(outFile);
 
 			final PathFinder model = new PathFinder();							/* Path		Path */
 			final Solver solver = new Solver();
@@ -193,17 +193,18 @@ public class PathFinder {
 
 			assert jpx.getNumNodes() > 0;
 			for(int i = 1; i <= jpx.getNumNodes() - 1; i ++){
-				out.println("Finding paths for Bounds == " + i);
+			//	out.println("Finding paths for Bounds == " + i);
 				final Bounds b = model.buildpathGraph(jpx, i);
 				Iterator iterSols = solver.solveAll(f , b);
 				while(iterSols.hasNext()){
 					Solution s = (Solution)iterSols.next();
 					if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
-						System.out.println(s);
-						out.print(s);
+						// this line prints to console
+						//System.out.println(s);
+					
+						// this line writes to file.
+						//	out.print(s);
 						String[] temp  = s.toString().split("ref=");
-						System.out.println("");
-						System.out.println("");
 						temp = temp[1].split(", next=");
 						temp = temp[0].split(", ");
 						ArrayList<String> ee = new ArrayList<String>();
@@ -268,20 +269,18 @@ public class PathFinder {
 				}
 
 			}
-			outFile.close();
-			out.close();
+			//outFile.close();
+		//	out.close();
 			System.out.println(fin);
 			return fin;
 
 		}	catch (NumberFormatException nfe) {System.out.print("EEEK1!");}
-		catch (IOException e) {System.out.println("EEEK2")	;}
 		return null;
 	}
 
 	public static void main(String[] argc){
 		Graph jpx = new Graph();
-		jpx.readFile("src/graphs/complexgraph.txt");
-		System.out.println( "num = " + jpx.getnumVisits());
+		jpx.readFile("src/graphs/forloop.txt");
 		PathFinder.find_path(jpx);
 	}
 }
