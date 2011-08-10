@@ -104,7 +104,11 @@ public class LoopFinder {
         final Expression nextNodeN = (((n.join(begin.transpose())).join(end)));
         
         
-        
+        final Formula f22 = n.in(reachableFromN);
+        final Formula f23 = n.join(end).in(start_loop);
+        final Formula f24 = n.in(end_loop);
+        final Formula f25 = (f23.and(f22)).iff(f24);
+        final Formula f26 = f25.forAll(n.oneOf(Node));
         // SCHILLER's END SOLUTION
       /*  final Formula f22 = x.in(nextNodeN);
         final Formula f23 = n.in(n.join(begEnd));
@@ -219,7 +223,7 @@ public class LoopFinder {
 		final Formula f31 = f30.forAll(n.oneOf(Node).and(st.oneOf(start_loop)).and(en.oneOf(end_loop)));
 
 		*/
-        Formula f100 = x.in(nextNodeN);
+/*        Formula f100 = x.in(nextNodeN);
         Formula f101 = st.in(nextNodeN);
         Formula f102 = st.in(n.join(begEnd));
         Formula f103 = (st.in(x.join(begEnd))).not();  // start node is not reachable from node after end node.
@@ -227,11 +231,11 @@ public class LoopFinder {
         Formula f105 = f104.implies(f103.and(f102).and(f101).and(f100));
         Formula f106 = f105.forAll(n.oneOf(Node).and(st.oneOf(start_loop).and(x.oneOf(Node))));
 	
-		
+	*/	
 		
 		
 	
-		return f5.and(f8).and(f12).and(f16).and(f21).and(f30).and(f36).and(f106);
+		return f5.and(f8).and(f12).and(f16).and(f21).and(f26).and(f30).and(f36);
 		
 		//and f26
 //.and(f21).and(f27).and(f31);
@@ -326,7 +330,7 @@ public class LoopFinder {
 		try {
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
-			final Bounds b = model.buildGraph("src/graphs/parallelloops.txt");
+			final Bounds b = model.buildGraph("src/graphs/forloop.txt");
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
@@ -336,7 +340,7 @@ public class LoopFinder {
 			while(iterSols.hasNext()) {
 				final Solution s = (Solution) iterSols.next();
 				if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
-					System.out.println(s);	
+					System.out.println(s);
 				}
 			}
 
