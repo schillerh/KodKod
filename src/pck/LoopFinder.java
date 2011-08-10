@@ -92,6 +92,7 @@ public class LoopFinder {
 		final Formula f20 = (f18.and(f17)  ).iff(f19);
 		final Formula f21 = f20.forAll((n.oneOf(Node)));
 <<<<<<< HEAD
+<<<<<<< HEAD
 		
 		final Expression begEnd = ((begin.transpose()).join(end)).closure(); // nodes reachable from node in question.
         final Expression nextNodeN = (((n.join(begin.transpose())).join(end)));
@@ -105,6 +106,8 @@ public class LoopFinder {
         // SCHILLER's END SOLUTION
       /*  final Formula f22 = x.in(nextNodeN);
 =======
+=======
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
 
 
 		final Formula f100 = n.in(reachableFromN);
@@ -117,7 +120,10 @@ public class LoopFinder {
 
 		// SCHILLER's END SOLUTION
 		/*  final Formula f22 = x.in(nextNodeN);
+<<<<<<< HEAD
 >>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
+=======
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
         final Formula f23 = n.in(n.join(begEnd));
         //final Formula f24 =     (x.join(begEnd).compare(ExprCompOperator.EQUALS, n.join(begEnd)));
         final Formula f24 = n.in(x.join(begEnd));
@@ -131,14 +137,23 @@ public class LoopFinder {
 
 		// TODO THIS IS BREAKING IT.
 		//        final Formula f22 = st.in(n.join(end.transpose()).join(end));
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
 
 
 
 
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
 		// 2nd attempt.
 		/*
         final Formula f22 = n.in((st.join(end.transpose())).join(begin));
@@ -241,18 +256,24 @@ public class LoopFinder {
 		final Formula f31 = f30.forAll(n.oneOf(Node).and(st.oneOf(start_loop)).and(en.oneOf(end_loop)));
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		*/
 /*        Formula f100 = x.in(nextNodeN);
 =======
 		 */
 		/*  Formula f100 = x.in(nextNodeN);
 >>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
+=======
+		 */
+		/*  Formula f100 = x.in(nextNodeN);
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
         Formula f101 = st.in(nextNodeN);
         Formula f102 = st.in(n.join(begEnd));
         Formula f103 = (st.in(x.join(begEnd))).not();  // start node is not reachable from node after end node.
         Formula f104 = n.in(end_loop);
         Formula f105 = f104.implies(f103.and(f102).and(f101).and(f100));
         Formula f106 = f105.forAll(n.oneOf(Node).and(st.oneOf(start_loop).and(x.oneOf(Node))));
+<<<<<<< HEAD
 <<<<<<< HEAD
 	
 	*/	
@@ -262,6 +283,8 @@ public class LoopFinder {
 		return f5.and(f8).and(f12).and(f16).and(f21).and(f26).and(f30).and(f36);
 		
 =======
+=======
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
 		 */
 
 
@@ -269,7 +292,10 @@ public class LoopFinder {
 
 		return f5.and(f21).and(f30).and(f36).and(f104);
 
+<<<<<<< HEAD
 >>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
+=======
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
 		//and f26
 		//.and(f21).and(f27).and(f31);
 	}
@@ -352,10 +378,14 @@ public class LoopFinder {
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
 <<<<<<< HEAD
+<<<<<<< HEAD
 			final Bounds b = model.buildGraph("src/graphs/forloop.txt");
 =======
 			final Bounds b = model.buildGraph(jpx);
 >>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
+=======
+			final Bounds b = model.buildGraph(jpx);
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
@@ -366,10 +396,14 @@ public class LoopFinder {
 				final Solution s = (Solution) iterSols.next();
 				if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
 <<<<<<< HEAD
+<<<<<<< HEAD
 					System.out.println(s);
 =======
 					out.print(s);
 >>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
+=======
+					out.print(s);
+>>>>>>> 6a8fa015db360558178606458410d09c2e9c0e3b
 				}
 			}
 
