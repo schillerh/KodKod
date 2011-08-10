@@ -28,8 +28,8 @@ public class PathFinderwLoop {
 	private final Relation Edge, begin, end;
 
 	private final Relation Visit, ref, next;
-	private static StringBuffer pathtemp = new StringBuffer();
 	private static boolean found = false;
+	static String fin = new String();
 
 	public PathFinderwLoop() {														/* Path */
 		Node = Relation.unary("Node");
@@ -221,7 +221,7 @@ public class PathFinderwLoop {
 
 
 
-			for(int i = 1; i < jpx.getNumNodes() && found == false; i++){
+			for(int i = 1; i < 30 && found == false; i++){
 
 
 
@@ -276,9 +276,15 @@ public class PathFinderwLoop {
 						}
 
 						//finally we solve the bloody path.
+						System.out.println("Checking to see if " + fin.toString() + "contains " + jpx.StartPt);
+						if(fin.toString().trim().contains(jpx.getStartPt())){
+							
+							
+							found = true;
+						}
 						
-
-						pathtemp.append("(" + jpx.getStartPt() + ",");
+						StringBuffer pathtemp = new StringBuffer();
+						pathtemp.append("(");
 						for(int x = 0; x < ee.size(); x++){
 							Integer index = en.indexOf(ee.get(x)) + 1;
 							pathtemp.append( en.get(index));
@@ -290,17 +296,19 @@ public class PathFinderwLoop {
 							}
 
 						}
+						
+						
+						if(!fin.contains(pathtemp.toString().trim())){
+							fin = fin.concat( pathtemp.toString() );
+							}
 
 
 
 
 						
 						
-					/*	if(fin.contains(jpx.getStartPt())){
-							found = true;
+						
 
-						}
-*/
 
 
 
@@ -314,7 +322,7 @@ public class PathFinderwLoop {
 
 
 			}
-			String fin = pathtemp.toString();
+			
 			System.out.println("path == " + fin);
 			out.close();
 			outFile.close();

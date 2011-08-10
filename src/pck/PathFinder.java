@@ -280,7 +280,7 @@ public class PathFinder {
 
 	public static void main(String[] argc){
 		Graph jpx = new Graph();
-		jpx.readFile("src/graphs/forloop.txt");
+		jpx.readFile("src/graphs/complexgraph.txt");
 		PathFinder.find_path(jpx);
 	}
 }
