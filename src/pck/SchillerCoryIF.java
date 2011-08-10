@@ -96,6 +96,7 @@ public final Formula empty() {
 public final Bounds getbounds(int scope) {
 	assert scope > 0;
 	
+	
 	final List<String> atoms = new ArrayList<String>(scope+12);
 	for (int i = 1; i <= 6; i++)
 		atoms.add("Node" + i);
