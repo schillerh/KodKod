@@ -1,7 +1,7 @@
-Node1,Node2,Node3,Node4,Node5,Node6
-Edge1,Edge2,Edge3,Edge4,Edge5,Edge6,Edge7
-Node1
+Node2,Node3,Node4,Node5,Node6
+Edge2,Edge3,Edge4,Edge5,Edge6,Edge7
+Node2
 Node6
 5
-Edge1,Node1/Edge2,Node2/Edge3,Node3/Edge4,Node4/Edge5,Node4/Edge6,Node2/Edge7,Node5
-Edge1,Node2/Edge2,Node3/Edge3,Node4/Edge4,Node5/Edge5,Node2/Edge6,Node5/Edge7,Node6
+Edge2,Node2/Edge3,Node3/Edge4,Node4/Edge5,Node4/Edge6,Node2/Edge7,Node5
+Edge2,Node3/Edge3,Node4/Edge4,Node5/Edge5,Node2/Edge6,Node5/Edge7,Node6

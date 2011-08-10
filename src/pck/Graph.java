@@ -458,14 +458,17 @@ public class Graph {
 	 */
 	public static void main(String[] argc){
 		Graph test  = new Graph();
-		//Graph test2 = new Graph();
-		//Graph test3 = new Graph();
+		Graph test2 = new Graph();
+		Graph test3 = new Graph();
+		Graph test4 = new Graph();
 		test.readFile("src/graphs/forloop.txt");
 		test.printMe();
-	//	test2.readFile("src/graphs/parallelloops.txt");
-	//	test2.solvePath();
-	//	test3.readFile("src/graphs/linearinput.txt");
-	//	test3.solvePath();
+		test2.readFile("src/graphs/parallelloops.txt");
+		test2.printMe();
+		test3.readFile("src/graphs/linearinput.txt");
+		test3.printMe();
+		test4.readFile("src/graphs/complexgraph.txt");
+		test4.printMe();
 		System.out.println("test complete");
 	}
 

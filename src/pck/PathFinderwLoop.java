@@ -126,6 +126,8 @@ public class PathFinderwLoop {
 	/* this is the old bounds function that was provided. */ 
 	public final Bounds buildloopGraph(Graph jpx, Integer bound) {
 
+
+
 		Integer scope = jpx.getnumVisits();
 		assert scope > 0;
 
@@ -140,8 +142,7 @@ public class PathFinderwLoop {
 
 
 
-		Integer temp = jpx.getnumVisits();
-		System.out.println("maxvis = "+ temp);
+		Integer temp = bound;
 		for (int i = 0; i < temp; i++){
 			atoms.add("Visit" + i);
 		}
@@ -158,14 +159,15 @@ public class PathFinderwLoop {
 		/* Java will not instantiate new Nodes. */
 		b.bound(Node, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(Edge, f.range(f.tuple(jpx.getEdge().get(0)), f.tuple( jpx.getEdge().get(jpx.getEdge().size()-1))));				/* Java will not instantiate new Edges. */
-		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + String.valueOf( Integer.valueOf( jpx.getnumVisits()) - 1 ))));		
+		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + String.valueOf( bound - 1))));
+
 		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
 		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
 
 
 
 		final TupleSet Next = f.noneOf(2);
-		for(Integer i = 0; i < scope - 1; i++){
+		for(Integer i = 0; i < bound - 1; i++){
 			Integer plusone = i + 1;
 			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
 		}
@@ -207,7 +209,7 @@ public class PathFinderwLoop {
 
 
 	@SuppressWarnings("rawtypes")
-	public static void find_loop_path(Graph jpx) {
+	public static String find_loop_path(SubGraph jpx, Integer forcediterations) {
 		try {
 			FileWriter outFile = new FileWriter("./temp");
 			PrintWriter out = new PrintWriter(outFile);
@@ -220,9 +222,10 @@ public class PathFinderwLoop {
 			System.out.println(System.currentTimeMillis());
 
 
-
-			for(int i = 1; i < 30 && found == false; i++){
-
+// note that found is never changed. this look only ends through the break statement.
+			Integer i = 1;
+			while(!found){
+				
 
 
 
@@ -276,12 +279,7 @@ public class PathFinderwLoop {
 						}
 
 						//finally we solve the bloody path.
-						System.out.println("Checking to see if " + fin.toString() + "contains " + jpx.StartPt);
-						if(fin.toString().trim().contains(jpx.getStartPt())){
-							
-							
-							found = true;
-						}
+
 						
 						StringBuffer pathtemp = new StringBuffer();
 						pathtemp.append("(");
@@ -297,7 +295,11 @@ public class PathFinderwLoop {
 
 						}
 						
-						
+						if(fin.toString().trim().contains(jpx.getStartPt())){
+							
+							found =true;
+							break;
+						}
 						if(!fin.contains(pathtemp.toString().trim())){
 							fin = fin.concat( pathtemp.toString() );
 							}
@@ -320,23 +322,37 @@ public class PathFinderwLoop {
 				}
 
 
-
+				i++;
 			}
+			
+			
+			
+			
+			
+			fin = "(" + jpx.StartPt + "|[" +fin.substring(1) + "])";
+			
+			
 			
 			System.out.println("path == " + fin);
 			out.close();
 			outFile.close();
+			
+			
+			
+			
+			return fin;
 
 		}	catch (NumberFormatException nfe) {}
 		catch (IOException e) {}
+		return null; // TODO some protection should be added here
 	}
 
 
 
 	public static void main(String[] argc){
-		Graph jpx = new Graph();
+		SubGraph jpx = new SubGraph("Loop1");
 		jpx.readFile("src/graphs/forloop.txt");
-		PathFinderwLoop.find_loop_path(jpx);
+		PathFinderwLoop.find_loop_path(jpx, 2);
 
 
 	}
