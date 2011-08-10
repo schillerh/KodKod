@@ -1,8 +1,13 @@
 package pck;
 /*
  * 
- * This is the loop finder.
+ * This is the loop finder. it is supposed to find start and end-loop points in a graph.
+ * TODO remove pathing component from this set of rules.
+ * 
  */
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -19,21 +24,19 @@ public class LoopFinder {
 
 	private final Relation Edge, begin, end, corresp;
 
-	private final Relation Visit, ref, next, start_loop, end_loop, loop_set;
+	private final Relation start_loop, end_loop, loop_set, node_after;
 
 	public LoopFinder() {														/* Path */
 		Node = Relation.unary("Node");
 		Edge = Relation.unary("Edge");
-		Visit = Relation.unary("Visit");
 		start_loop = Relation.unary("start_loop");
 		end_loop = Relation.unary("end_loop");
 		loop_set = Relation.unary("loop_set");
+		node_after = Relation.unary("node_after");
 
 
 		begin = Relation.binary("begin");
 		end = Relation.binary("end");
-		ref = Relation.binary("ref");
-		next = Relation.binary("next");
 		corresp = Relation.binary("corresp");
 
 		Start = Relation.unary("Start");
@@ -43,10 +46,8 @@ public class LoopFinder {
 	public Formula declarations() {
 		final Formula f0 = begin.function(Edge, Node);
 		final Formula f1 = end.function(Edge, Node);
-		final Formula f2 = ref.function(Visit, Edge);	/* Node */
-		final Formula f3 = next.partialFunction(Visit, Visit);
 		final Formula f4 = corresp.function(start_loop, end_loop);
-		return f0.and(f1).and(f2).and(f3);
+		return f0.and(f1).and(f4);
 	}
 
 	public final Formula facts() {
@@ -59,46 +60,38 @@ public class LoopFinder {
 		final Variable en = Variable.unary("en");
 		final Variable x = Variable.unary("x");
 		final Variable x2 = Variable.unary("x2");
-	//	final Variable end = Variable.unary("end");
+		//	final Variable end = Variable.unary("end");
 		/*	final Variable e = Variable.unary("e");	*/
 
 		/* CONFORMITY: The structure of the path conforms to the structure of the graph. */
-		final Formula f0 = v.join(next).eq(w);
-		final Formula f1 = v.join(ref).eq(e);								/* n */
-		final Formula f2 = w.join(ref).eq(d);								/* m */
 		final Formula f3 = d.join(begin).eq(e.join(end));					/* e	n */
 		/*	final Formula f4 = e.join(end).eq(m);	*/
-		final Formula f4 = f0.and(f1).and(f2).implies(f3);
-		final Formula f5 = f4.forAll(v.oneOf(Visit).and(w.oneOf(Visit)).and(e.oneOf(Edge)).and(d.oneOf(Edge)));
+		final Formula f5 = f3.forSome(e.oneOf(Edge).and(d.oneOf(Edge)));
 
-		/* ACYCLICITY: The path is an acyclic sequence of Visits. */
-		final Formula f6 = v.in(w.join(next.reflexiveClosure()));
-		final Formula f7 = w.in(v.join(next.closure())).not();
-		final Formula f8 = f6.iff(f7).forAll(v.oneOf(Visit).and(w.oneOf(Visit)));
 
 		/* There is a Visit before all other Visits, which references an Edge that Begins at the Start Node. */
-		final Formula f9 = v.join(ref.join(begin)).eq(Start);
-		final Formula f10 = w.in(v.join(next.reflexiveClosure()));
-		final Formula f11 = f9.and(f10);
-		final Formula f12 = f11.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
-
 		/* There is a Visit after all other Visits, which references an Edge that Ends at the Finish Node. */
-		final Formula f13 = v.join(ref.join(end)).eq(Finish);
-		final Formula f14 = v.in(w.join(next.reflexiveClosure()));
-		final Formula f15 = f13.and(f14);
-		final Formula f16 = f15.forSome(v.oneOf(Visit)).forAll(w.oneOf(Visit));
 		// rechablefromN = set of nodes reachable from N.
 		// nodeb4N = going from beginning to end... set ofnodes that come before the node N
-		
+
 		// start loop nodes are nodes such that their transitive closure contains the node itself, but the node that comes before
 		// is not contained within the transitive closure.
 		final Expression reachableFromN = (n.join(((begin.transpose()).join(end)).closure()));
+		final Expression backreachableFromN = (n.join(((end.transpose()).join(begin)).closure()));
 		final Expression nodeb4N       = (n.join(end.transpose() )).join(begin);
+		final Expression begEnd = ((begin.transpose()).join(end)).closure(); // nodes reachable from node in question.
+		final Expression nextNodeN = (((n.join(begin.transpose())).join(end)));
+		final Expression Endbeg = ((end.transpose()).join(begin)).closure(); // nodes reachable from node in question going backwards.
+		final Expression NodeAfter = (n.join(begin.transpose() )).join(end);
+
+
+
 		final Formula f17 = n.in(reachableFromN);
 		final Formula f18 = (nodeb4N.in(reachableFromN)).not();
 		final Formula f19 = n.in(start_loop);
 		final Formula f20 = (f18.and(f17)  ).iff(f19);
 		final Formula f21 = f20.forAll((n.oneOf(Node)));
+<<<<<<< HEAD
 		
 		final Expression begEnd = ((begin.transpose()).join(end)).closure(); // nodes reachable from node in question.
         final Expression nextNodeN = (((n.join(begin.transpose())).join(end)));
@@ -111,61 +104,86 @@ public class LoopFinder {
         final Formula f26 = f25.forAll(n.oneOf(Node));
         // SCHILLER's END SOLUTION
       /*  final Formula f22 = x.in(nextNodeN);
+=======
+
+
+		final Formula f100 = n.in(reachableFromN);
+		final Formula f101 = (NodeAfter.in(backreachableFromN)).not();
+		final Formula f105 = n.in(start_loop).not();
+		final Formula f102 = n.in(end_loop);
+		final Formula f103 = (f100.and(f101).and(f105)).iff(f102);
+		final Formula f104 = f103.forAll((n.oneOf(Node)));
+
+
+		// SCHILLER's END SOLUTION
+		/*  final Formula f22 = x.in(nextNodeN);
+>>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
         final Formula f23 = n.in(n.join(begEnd));
         //final Formula f24 =     (x.join(begEnd).compare(ExprCompOperator.EQUALS, n.join(begEnd)));
         final Formula f24 = n.in(x.join(begEnd));
         final Formula f25 = n.in(end_loop);
         final Formula f26 = (f22.and(f23).and(f24).not()).iff(f25);
         final Formula f27 = f26.forAll(x.oneOf(Node).and(n.oneOf(Node)));
-        
-        */
-        
-        
-        
+
+		 */
+
+
+
 		// TODO THIS IS BREAKING IT.
-//        final Formula f22 = st.in(n.join(end.transpose()).join(end));
+		//        final Formula f22 = st.in(n.join(end.transpose()).join(end));
 
 
-        
-        
-        
-        
-        
-        
-        // 2nd attempt.
-        /*
+
+
+
+
+
+
+		// 2nd attempt.
+		/*
         final Formula f22 = n.in((st.join(end.transpose())).join(begin));
         final Formula f23 = n.in(st.join(begEnd));
         final Formula f24 = n.in(end_loop);
         final Formula f25 = f24.implies(f22.and(f23));
         final Formula f26 = f25.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
-        */
-        
-        
-       /*final Formula f22 = n.in(st.join(begEnd)); // an end node is any node that has an immediate pointer to a start node.
+		 */
+
+
+		/*final Formula f22 = n.in(st.join(begEnd)); // an end node is any node that has an immediate pointer to a start node.
         final Formula f23 = n.in(end_loop);  // and is reachable from said start node.
         final Formula f24 = st.in(nextNodeN);
         final Formula f25 = (f24.and(f22)).iff(f23);
         final Formula f26 = f25.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
-        */
-        
-        
-        
-        
-        
-        final Formula f27 = n.in(n.join(begEnd));
-        final Formula f28 = n.in(loop_set);
-        final Formula f29 = f27.iff(f28);
-        final Formula f30 = f29.forAll(n.oneOf(Node));
-        
-        final Formula f31 = x.in(start_loop);
-        final Formula f32 = n.in(end_loop);
-        final Formula f33 = x.in(nextNodeN);
-        final Formula f34 = x.product(n).in(corresp);
-        final Formula f35 = f34.iff(f33.and(f32).and(f31));
-        final Formula f36 = f35.forAll(n.oneOf(Node).and(x.oneOf(Node)));
-        
-        /*
+		 */
+
+
+
+
+
+		final Formula f27 = n.in(n.join(begEnd));
+		final Formula f28 = n.in(loop_set);
+		final Formula f29 = f27.iff(f28);
+		final Formula f30 = f29.forAll(n.oneOf(Node));
+
+		final Formula f31 = x.in(start_loop);
+		final Formula f32 = n.in(end_loop);
+		final Formula f33 = x.in(nextNodeN);
+		final Formula f34 = x.product(n).in(corresp);
+		final Formula f35 = f34.iff(f33.and(f32).and(f31));
+		final Formula f36 = f35.forAll(n.oneOf(Node).and(x.oneOf(Node)));
+
+		/*
+        final Formula f37 = n.in(end_loop);
+        final Formula f38 = x.in(NodeAfter);
+        final Formula f39 = x.in(node_after);
+        final Formula f40 = (f37.and(f38)).implies(f39);
+        final Formula f41 = f40.forAll(x.oneOf(Node).and(n.oneOf(Node)));
+		 */
+
+
+
+
+		/*
         final Formula f37 = x.in(  ( (n.join(end.transpose())).join(begin) ));
         final Formula f38 = x.in(n.join(begEnd));
         final Formula f42 = n.in(start_loop);
@@ -173,46 +191,46 @@ public class LoopFinder {
         final Formula f43 = f37.and(f38).and(f42);
         final Formula f40 = f39.iff(f43);
         final Formula f41 = f40.forAll(x.oneOf(Node).and(n.oneOf(Node)));
-        */
-        
-    //   final Formula f37 =  (n.in( (st.join(end.transpose() )).join(begin))).not();  // n is not a node that came before st.
-     
-        /* another failed end loop form.
+		 */
+
+		//   final Formula f37 =  (n.in( (st.join(end.transpose() )).join(begin))).not();  // n is not a node that came before st.
+
+		/* another failed end loop form.
        final Formula f38 = n.in( st.join(end.transpose()).join(begin) );
        final Formula f40 = n.in(end_loop);
        final Formula f39 = st.in(start_loop);
        final Formula f41 = f40.iff(f38.and(f39));
        final Formula f42 = f41.forAll(n.oneOf(Node).and(st.oneOf(Node)));
-        */ 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
- 
-        
-        //OLD END LOOP FORMULAS
-      /*  final Formula f122 = n.in((st.join(begEnd))); // node in question reachable from start node in question.
+		 */ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//OLD END LOOP FORMULAS
+		/*  final Formula f122 = n.in((st.join(begEnd))); // node in question reachable from start node in question.
 		final Formula f123 = st.in(       nextNodeN.join(begEnd)          ).not();   // start node is not reachable from the NEXT node after n.
 		final Formula f124 = n.in(end_loop);
 		final Formula f125 = (n.in(Finish)).not(); // keep the bloody SAT solver from using a finishing nodes empty transitive closure to break my rules.
 		final Formula f126 = f122.and(f123).iff(f124);
 		final Formula f127 = f126.forAll(n.oneOf(Node).and(st.oneOf(start_loop)));
-		*/
-		
-        
-        //OLD LOOP_SET FORMULA
+		 */
+
+
+		//OLD LOOP_SET FORMULA
 		// nodes in the loop set is the nodes reachable from the start node, minus the nodes reachable from the node after the end node.. so long as that NEXT node is not the start node.
 		// expression is the node after the end node. so long as it's not the start node.
 		/*final Expression afterEnd = (((en.join(begin.transpose())).join(end))).difference(st);
@@ -222,14 +240,20 @@ public class LoopFinder {
 		final Formula f30 = f28.iff(f29);
 		final Formula f31 = f30.forAll(n.oneOf(Node).and(st.oneOf(start_loop)).and(en.oneOf(end_loop)));
 
+<<<<<<< HEAD
 		*/
 /*        Formula f100 = x.in(nextNodeN);
+=======
+		 */
+		/*  Formula f100 = x.in(nextNodeN);
+>>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
         Formula f101 = st.in(nextNodeN);
         Formula f102 = st.in(n.join(begEnd));
         Formula f103 = (st.in(x.join(begEnd))).not();  // start node is not reachable from node after end node.
         Formula f104 = n.in(end_loop);
         Formula f105 = f104.implies(f103.and(f102).and(f101).and(f100));
         Formula f106 = f105.forAll(n.oneOf(Node).and(st.oneOf(start_loop).and(x.oneOf(Node))));
+<<<<<<< HEAD
 	
 	*/	
 		
@@ -237,79 +261,73 @@ public class LoopFinder {
 	
 		return f5.and(f8).and(f12).and(f16).and(f21).and(f26).and(f30).and(f36);
 		
+=======
+		 */
+
+
+
+
+		return f5.and(f21).and(f30).and(f36).and(f104);
+
+>>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
 		//and f26
-//.and(f21).and(f27).and(f31);
+		//.and(f21).and(f27).and(f31);
 	}
 
 	public final Formula empty() {
 		return declarations().and(facts());
 	}
-/* this is the old bounds function that was provided. */ 
-	public final Bounds buildGraph(String filename) {
-		
-		Graph jpx = new Graph();
-		jpx.readFile(filename);
+	/* this is the old bounds function that was provided. */ 
+	public final Bounds buildGraph(Graph jpx) {
+
+
 
 		Integer scope = jpx.getnumVisits();
 		assert scope > 0;
-		
+
 		final List<String> atoms = new ArrayList<String>(40);
 		atoms.addAll(jpx.getNodes());
 		Integer numNodes = jpx.getNodes().size();
-		
+
 		atoms.addAll(jpx.getEdge());
-		
 
 
-		
 
 
-		Integer temp = jpx.getnumVisits();
-		System.out.println("maxvis = "+ temp);
-		for (int i = 0; i < temp; i++){
-			atoms.add("Visit" + i);
-		}
-		
-		
+
+
+
+
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
 		final int max = scope - 1;
 
-		
-		
-		
+
+
+
 		/* Java will not instantiate new Nodes. */
 		b.bound(Node, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(Edge, f.range(f.tuple(jpx.getEdge().get(0)), f.tuple( jpx.getEdge().get(jpx.getEdge().size()-1))));				/* Java will not instantiate new Edges. */
-		b.bound(Visit, f.range(f.tuple("Visit0"), f.tuple("Visit" + String.valueOf( Integer.valueOf( jpx.getnumVisits()) - 1 ))));
 		b.bound(start_loop, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(end_loop, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
 		b.bound(loop_set, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
-		
-		b.bound(ref, b.upperBound(Visit).product(b.upperBound(Edge)));		/* Node */
-		b.bound(next, b.upperBound(Visit).product(b.upperBound(Visit)));
-		
+		b.bound(node_after, f.range(f.tuple(jpx.getNodes().get(0)), f.tuple( jpx.getNodes().get(jpx.getNodes().size()-1))));
+
 		b.bound(corresp, b.upperBound(start_loop).product(b.upperBound(end_loop)));
-		
-		
-		final TupleSet Next = f.noneOf(2);
-		for(Integer i = 0; i < scope - 1; i++){
-			Integer plusone = i + 1;
-			Next.add(f.tuple("Visit"+i, "Visit"+plusone));
-		}
-		b.boundExactly(next, Next);
+
+
 
 		final TupleSet Begins = f.noneOf(2);
 		for(Integer i = 0; i < jpx.getBegin().size(); i++){
-		Begins.add(f.tuple(jpx.getBegin().get(i).getX(), jpx.getBegin().get(i).getY()));
+			Begins.add(f.tuple(jpx.getBegin().get(i).getX(), jpx.getBegin().get(i).getY()));
 		}
 		b.boundExactly(begin , Begins);
 
-		
+
 		final TupleSet Ends = f.noneOf(2);
 		for(Integer i = 0; i < jpx.getEnd().size(); i++){
-		Ends.add(f.tuple(jpx.getEnd().get(i).getX(), jpx.getEnd().get(i).getY()));
+			Ends.add(f.tuple(jpx.getEnd().get(i).getX(), jpx.getEnd().get(i).getY()));
 		}
 		b.boundExactly(end , Ends);
 
@@ -324,13 +342,20 @@ public class LoopFinder {
 		return b;
 	}
 
-	
+
 	@SuppressWarnings("rawtypes")
-	public static void main(String[] args) {
-		try {
+	public static void find_loops(Graph jpx){
+		try{
+			FileWriter outFile = new FileWriter("./temp");
+			PrintWriter out = new PrintWriter(outFile);
+
 			final LoopFinder model = new LoopFinder();							/* Path		Path */
 			final Solver solver = new Solver();
+<<<<<<< HEAD
 			final Bounds b = model.buildGraph("src/graphs/forloop.txt");
+=======
+			final Bounds b = model.buildGraph(jpx);
+>>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
 			final Formula f = model.empty();
 			System.out.println(f);
 			solver.options().setSolver(SATFactory.DefaultSAT4J);
@@ -340,10 +365,38 @@ public class LoopFinder {
 			while(iterSols.hasNext()) {
 				final Solution s = (Solution) iterSols.next();
 				if(s.outcome() == Solution.Outcome.SATISFIABLE || s.outcome() == Solution.Outcome.TRIVIALLY_SATISFIABLE){
+<<<<<<< HEAD
 					System.out.println(s);
+=======
+					out.print(s);
+>>>>>>> 4f98107183b09b37516e9d81a47a724237b0c626
 				}
 			}
 
-		}	catch (NumberFormatException nfe) {}
+
+
+
+
+			//output goes here.
+			//out.print(" ///// ");			
+
+			outFile.close();
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
+
+
+	public static void main(String[] argc){
+		Graph jpx = new Graph();
+		jpx.readFile("src/graphs/forloop.txt");
+		LoopFinder.find_loops(jpx);
+	}
+
+
 }
+
+
