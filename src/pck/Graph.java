@@ -12,6 +12,14 @@ import java.util.Scanner;
  *
  */
 public class Graph {
+
+
+	private ArrayList<String> Nodes = new ArrayList<String>();
+	private ArrayList<String> Edge = new ArrayList<String>();
+	private ArrayList<Pair> begin = new ArrayList<Pair>();
+	private ArrayList<Pair> end = new ArrayList<Pair>();
+	private Integer numVisits = new Integer(0);
+	String StartPt, endPt = new String();
 	private ArrayList<SubGraph> subs = new ArrayList<SubGraph>();
 	private String path = new String();
 
@@ -39,13 +47,6 @@ public class Graph {
 		this.numVisits = numVisits;
 	}
 
-
-	private ArrayList<String> Nodes = new ArrayList<String>();
-	private ArrayList<String> Edge = new ArrayList<String>();
-	private ArrayList<Pair> begin = new ArrayList<Pair>();
-	private ArrayList<Pair> end = new ArrayList<Pair>();
-	private Integer numVisits = new Integer(0);
-	String StartPt, endPt = new String();
 
 	/**
 	 * blank constructor for graph class, just creates a blank graph.
@@ -259,6 +260,10 @@ public class Graph {
 
 
 
+	public Integer getNumNodes(){
+		return Nodes.size();
+	}
+
 
 	/**
 	 * returns the nodes.
@@ -332,9 +337,9 @@ public class Graph {
 	public String getEndPt() {
 		return endPt;
 	}
-	
-	
-	
+
+
+
 
 	/**
 	 * sets internal endpoint to the endpoint specified, end point being the node at the end of the path.
@@ -391,39 +396,60 @@ public class Graph {
 	/**
 	 * This private method solves all the subgraphs in this graph, by calling solveSubGraph on all of them.
 	 */
-	private void solveAllSubgraphs(){
+	protected void solveAllSubgraphs(){
 		for(int i = 0; i < subs.size(); i++){
 			subs.get(i).solveSubgraph();
 		}
 	}
-	
+
 	/**
 	 * this method solves the current graph, and sets it's path string.
 	 */
 	public void solveGraph(){
 		// TODO if loops exist....
 		// TODO remove loops from graph.... and create subgraphs. then solve subgraphs. <-- magic function.
-		
+
 		this.createSubGraphs();
-		
+
+
+
 		this.solveAllSubgraphs();
 		// TODO then solve this graph <using normal methods in the pathfinder.. simply solve graph, and convert solutions into the pathstring>
 		// TODO then replace subgraph labels in path string with subgraph solutions. <this one should be pretty easy>
 		// finally set path string in THIS graph to final solution.
-		
+
+		this.solvePath();
+
+
+	}
+
+	protected void solvePath(){
+		//TODO this runs the path solver on the current graph, does not change anything. simply runs it, interprets the output, and sets the path string.
+		//uses path string from the subgraphs to generate the pathstring, so make sure you create and solve them first. 
+		// this is intended to only be run on graphs that DO NOT CONTAIN LOOPS. Otherwise, it will take a long time to complete.
+		this.setPath(PathFinder.find_path(this));
+		System.out.println("path found == " + this.getPath());
 		
 	}
-/**
- * this private method finds all loops contained within the current graph, and eliminates them, generating a set of subgraphs now contained within this graph.
- * These subgraphs can then be solved by the solveAllSubGraphs() method.
- */
-	private void createSubGraphs() {
+
+
+
+
+
+
+
+
+	/**
+	 * this private method finds all loops contained within the current graph, and eliminates them, generating a set of subgraphs now contained within this graph.
+	 * These subgraphs can then be solved by the solveAllSubGraphs() method.
+	 */
+	protected void createSubGraphs() {
 		// TODO this function removes all the loops from a graph and replaces them with singular nodes. named LOOP[INDEX] eg LOOP1
 		// TODO all edges that point to the start node now point to the LOOP node.
 		// TODO all edges that begin on the node AFTER the end node now begin with the LOOP node.
-		
+
 		//since these are saved locally it's okay to re-use the indexes for each graph and it's respective subgraphs.
-		
+
 	}
 
 	/**
@@ -432,14 +458,14 @@ public class Graph {
 	 */
 	public static void main(String[] argc){
 		Graph test  = new Graph();
-		Graph test2 = new Graph();
-		Graph test3 = new Graph();
+		//Graph test2 = new Graph();
+		//Graph test3 = new Graph();
 		test.readFile("src/graphs/forloop.txt");
 		test.printMe();
-		test2.readFile("src/graphs/parallelloops.txt");
-		test2.printMe();
-		test3.readFile("src/graphs/linearinput.txt");
-		test3.printMe();
+	//	test2.readFile("src/graphs/parallelloops.txt");
+	//	test2.solvePath();
+	//	test3.readFile("src/graphs/linearinput.txt");
+	//	test3.solvePath();
 		System.out.println("test complete");
 	}
 
